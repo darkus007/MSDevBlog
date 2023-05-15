@@ -1,0 +1,9 @@
+<ul>
+    {% if selected == 'home' %}
+        <li><a href="{% url 'blog:home' %}" class="current">Главная</a></li>
+    {% else %}
+        <li><a href="{% url 'blog:home' %}">Главная</a></li>
+    {% endif %}
+    <li><a href="#">Обратная связь</a></li>
+    <li><a href="#">О сайте</a></li>
+</ul>

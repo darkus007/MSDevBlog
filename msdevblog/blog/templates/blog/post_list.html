@@ -1,0 +1,11 @@
+{% extends 'blog/base.html' %}
+
+{% block content %}
+    {% for post in object_list %}
+    <div class="post_box_content">
+        <h2><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></h2>
+        <p>{{ post.body|truncatewords_html:30 }}</p>
+        <a class="more float_r" href="{{ post.get_absolute_url }}">Читать</a>
+    </div>
+    {% endfor %}
+{% endblock %}

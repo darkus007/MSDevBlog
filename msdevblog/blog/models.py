@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.urls import reverse
 
 # стандартная библиотека не работает с русскими символами, используем свою
 from msdevblog.utilites import slugify
@@ -51,6 +52,9 @@ class Post(models.Model):
         if not self.slug or self.slug == '':
             self.slug = slugify(self.title)
         return super().save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return reverse('blog:post-detail', args=[self.slug])
 
     class Meta:
         verbose_name = 'Пост'
