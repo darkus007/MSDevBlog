@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MS DevBlog</title>
     <link href="{% static 'css/blog.css' %}" rel="stylesheet" type="text/css" />
 </head>
 
@@ -17,10 +18,24 @@
             <div id="tooplate_menu">
                 {% include "blog/includes/main_menu.html" with selected=selected %}
                 <ul>
-                    <li class="last"><a href="#">Войти</a></li>
+                    {% if user.is_authenticated %}
+                        <li class="last"><a href="">{{ user.username }}</a></li>
+                        <li><a href="{% url 'logout' %}">Выход</a></li>
+                    {% else %}
+                        <li class="last"><a href="{% url 'register' %}">Регистрация</a></li>
+                        <li><a href="{% url 'login' %}">Войти</a></li>
+                    {% endif %}
                 </ul>
             </div>
         </div> <!-- end plate_header-->
+
+<!--        <div id="tooplate_middle">-->
+<!--            <div id="mid_title">-->
+<!--                Blog-->
+<!--            </div>-->
+<!--            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris iaculis nulla vitae ante congue iaculis. Nunc vitae sapien sed neque porttitor egestas sit amet ut ligula.</p>-->
+<!--        </div> -->
+        <!-- end of middle -->
 
         <div id="tooplate_main">
             <div class="col_w960 hr_divider">

@@ -1,4 +1,4 @@
-from django.contrib.auth.models import User
+from django.conf import settings
 from django.db import models
 from django.urls import reverse
 
@@ -29,7 +29,7 @@ class Post(models.Model):
         DRAFT = 'DF', 'Черновик'           # Draft
         PUBLISHED = 'PB', 'Опубликовано'   # Published
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts', verbose_name='Автор поста')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='posts', verbose_name='Автор поста')
     # on_delete=models.SET(1) - первая кат-рия будет "Все категории" задается в настройках
     cat = models.ForeignKey(Category, on_delete=models.SET(1),
                             related_name='posts', verbose_name='Категория')

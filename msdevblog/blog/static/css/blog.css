@@ -195,6 +195,29 @@ h6 { font-size: 14px; margin: 0 0 5px; padding: 0; }
     width: 50px;
 }
 
+#tooplate_middle {
+	clear: both;
+	width: 760px;
+	padding: 10px 100px 30px;
+	overflow: hidden;
+	background: url(../../static/images/mid_divider.png) bottom center no-repeat
+}
+
+#mid_title {
+	font-size: 28px;
+	font-weight: 400;
+	color: #ffcc00;
+	margin-bottom: 5px;
+	text-shadow: 1px 1px 3px #000
+}
+
+#tooplate_middle p {
+	width: 700px;
+	font-size: 13px;
+	color: #ccc;
+	line-height: 30px;
+}
+
 /* main */
 
 #tooplate_main {
@@ -346,6 +369,7 @@ h6 { font-size: 14px; margin: 0 0 5px; padding: 0; }
 	margin-right: 10px;
 	font-size: 13px;
 	color: #ccc;
+	margin-top: 25px;
 }
 
 #cp_contact_form form textarea {
