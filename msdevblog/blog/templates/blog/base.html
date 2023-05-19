@@ -19,7 +19,7 @@
                 {% include "blog/includes/main_menu.html" with selected=selected %}
                 <ul>
                     {% if user.is_authenticated %}
-                        <li class="last"><a href="">{{ user.username }}</a></li>
+                        <li class="last"><a href="{% url 'profile' %}">{{ user.username }}</a></li>
                         <li><a href="{% url 'logout' %}">Выход</a></li>
                     {% else %}
                         <li class="last"><a href="{% url 'register' %}">Регистрация</a></li>

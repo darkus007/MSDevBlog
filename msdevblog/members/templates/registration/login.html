@@ -21,6 +21,7 @@
             </form>
         </div>
         <div class="cleaner h10"></div>
-        <p>Вы не зарегистрированы? Регистрация <a href="{% url 'register' %}" class="link-dark">тут...</a></p>
+        <p>Вы не зарегистрированы? <a href="{% url 'register' %}" class="link-dark">Регистрация.</a></p>
+        <p>Забыли пароль? <a href="{% url 'password_reset' %}" class="link-dark">Восстановление пароля.</a></p>
     </div>
 {% endblock %}

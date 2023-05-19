@@ -25,7 +25,7 @@ SECRET_KEY = getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 
 # Application definition
@@ -130,9 +130,26 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
+# ================================= дополнительные настройки =================================
+
 # Расширенная модель пользователя
 AUTH_USER_MODEL = "members.AdvUser"
+
 
 # Переадресацию после регистрации и выхода пользователя
 LOGIN_REDIRECT_URL = 'blog:home'
 LOGOUT_REDIRECT_URL = 'blog:home'
+
+
+# настраиваем отправку писем
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # выводит в командной строке
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  # отправляет на почтовый сервер
+DEFAULT_FROM_EMAIL = 'flats@mail.ru'
+EMAIL_HOST = 'localhost'
+EMAIL_PORT = 1025
+# EMAIL_HOST_USER = 'user'                                         # логин для SMTP-сервера, по умолчанию пустая строка
+# EMAIL_HOST_PASSWORD = 'password'                                 # пароль для SMTP-сервера, по умолчанию пустая строка
+ADMINS = [  # админы, которым будут отправлены письма методом mail_admins
+    ('admin', 'admin@mail.ru'),
+]
+SERVER_EMAIL = 'flats_from@email.ru'  # адрес почты с которой будут отправлены письма

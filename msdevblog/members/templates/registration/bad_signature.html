@@ -1,0 +1,10 @@
+{% extends 'blog/base.html' %}
+
+{% block content %}
+    <div class="post_box_content">
+    <h3>Подтверждение e-mail адреса</h3>
+    <p>Активация пользователя с таким e-mail прошла неудачно.<br>
+        <p><a href="{% url 'repeat-send-email' %}">Отправить сообщение для активации e-mail повторно.</a></p>
+    </p>
+    </div>
+{% endblock %}

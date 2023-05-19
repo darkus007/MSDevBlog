@@ -420,3 +420,7 @@ h6 { font-size: 14px; margin: 0 0 5px; padding: 0; }
 	text-decoration: none;
 	text-shadow: 1px 1px 1px #000
 }
+
+.success {
+    color: white;
+}
