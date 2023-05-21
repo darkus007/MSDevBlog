@@ -3,6 +3,10 @@ from django.contrib.auth.views import PasswordChangeView
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy, reverse
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_protect
+from django.views.decorators.debug import sensitive_post_parameters
+from django.views.decorators.http import require_POST
 from django.views.generic import CreateView
 from django.core.signing import BadSignature
 from django.contrib import messages
@@ -24,12 +28,19 @@ class UserPasswordChangeView(PasswordChangeView):
     template_name = 'registration/change_password.html'
     success_url = reverse_lazy('password-changed')
 
+    # метод переопределен с целью указать правильную переадресацию в login_required
+    @method_decorator(sensitive_post_parameters())
+    @method_decorator(csrf_protect)
+    @method_decorator(login_required(login_url=reverse_lazy('login')))
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
 
 def password_changed(request):
     return render(request, 'registration/password_changed.html')
 
 
-@login_required
+@login_required(login_url=reverse_lazy('login'))
 def user_profile(request):
     """ Отображение и обновление профиля пользователя. """
     user = get_object_or_404(AdvUser, id=request.user.id)
@@ -48,6 +59,7 @@ def user_profile(request):
     return render(request, 'registration/user_profile.html', {'form': form})
 
 
+@require_POST
 def user_email_activate(request, sign):
     """
     Функция для активации e-mail пользователя.
@@ -68,7 +80,7 @@ def user_email_activate(request, sign):
     return render(request, template)
 
 
-@login_required
+@login_required(login_url=reverse_lazy('login'))
 def send_email_activate_letter(request):
     """
     Повторно отправляет письмо для подтверждения e-mail.
