@@ -1,41 +1,59 @@
-from django.shortcuts import render
-from django.views.generic import ListView, DetailView
+from django.contrib.auth.mixins import UserPassesTestMixin
+from django.views.generic import ListView, DetailView, CreateView, UpdateView
+from django.shortcuts import get_object_or_404
 
-from blog.models import Post
-
-
-def index(request):
-    return render(request, 'blog/base.html')
+from blog.models import Post, Category
+from blog.forms import PostForm
 
 
-class ContextMixin:
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['selected'] = self.selected
-        return context
-
-
-class PostListView(ContextMixin, ListView):
+class PostListView(ListView):
     model = Post
     template_name = 'blog/post_list.html'
-    selected = 'home'
+    extra_context = {'selected': 'home'}
 
     def get_queryset(self):
         return Post.published.all()
 
-    # def get_context_data(self, **kwargs):
-    #     context = super().get_context_data(**kwargs)
-    #     context['selected'] = 'home'
-    #     return context
 
-
-class PostDetailView(ContextMixin, DetailView):
+class PostDetailView(DetailView):
     model = Post
     template_name = 'blog/post_detail.html'
-    selected = 'detail'
+    extra_context = {'selected': 'detail'}
 
-    # def get_context_data(self, **kwargs):
-    #     context = super().get_context_data(**kwargs)
-    #     context['selected'] = 'detail'
-    #     return context
 
+class PostCreateView(UserPassesTestMixin, CreateView):
+    model = Post
+    form_class = PostForm
+    template_name = 'blog/post_create.html'
+    extra_context = {'selected': 'create_post'}
+
+    def test_func(self):
+        return self.request.user.is_superuser
+
+    def form_valid(self, form):
+        """ Передаем пользователя в форму """
+        form.instance.user = self.request.user
+        return super().form_valid(form)
+
+
+class PostUpdateView(UserPassesTestMixin, UpdateView):
+    model = Post
+    form_class = PostForm
+    template_name = 'blog/post_create.html'
+    selected = 'create_post'
+    extra_context = {'selected': 'create_post'}
+
+    def test_func(self):
+        return self.request.user.is_superuser
+
+    def get_queryset(self):
+        return Post.objects.filter(slug=self.kwargs['slug']).select_related('cat', 'user')
+
+
+class ByCategoryListView(ListView):
+    model = Post
+    template_name = 'blog/post_list.html'
+
+    def get_queryset(self):
+        cat = get_object_or_404(Category, slug=self.kwargs['slug'])
+        return Post.objects.filter(cat=cat)

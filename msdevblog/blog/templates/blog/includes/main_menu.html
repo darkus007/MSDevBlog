@@ -6,4 +6,25 @@
     {% endif %}
     <li><a href="#">Обратная связь</a></li>
     <li><a href="#">О сайте</a></li>
+
+    {% if user.is_authenticated %}
+        {% if selected == 'create_post' %}
+            <li><a href="{% url 'blog:post-new' %}" class="current">Новый пост</a></li>
+        {% else %}
+            <li><a href="{% url 'blog:post-new' %}">Новый пост</a></li>
+        {% endif %}
+        <li class="last"><a href="{% url 'profile' %}">{{ user.username }}</a></li>
+        <li><a href="{% url 'logout' %}">Выход</a></li>
+    {% else %}
+        {% if selected == 'register' %}
+            <li class="last"><a href="{% url 'register' %}" class="current">Регистрация</a></li>
+        {% else %}
+            <li class="last"><a href="{% url 'register' %}">Регистрация</a></li>
+        {% endif %}
+        {% if selected == 'login' %}
+            <li><a href="{% url 'login' %}" class="current">Войти</a></li>
+        {% else %}
+            <li><a href="{% url 'login' %}">Войти</a></li>
+        {% endif %}
+    {% endif %}
 </ul>

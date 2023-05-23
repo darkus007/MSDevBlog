@@ -424,3 +424,8 @@ h6 { font-size: 14px; margin: 0 0 5px; padding: 0; }
 .success {
     color: white;
 }
+
+.d-flex-space-between {
+    display: flex;
+    justify-content: space-between;
+}

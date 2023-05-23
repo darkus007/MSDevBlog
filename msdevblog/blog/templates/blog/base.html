@@ -16,16 +16,7 @@
         <div id="plate_header">
             <div id="site_title"><h1><a href="{% url 'blog:home' %}"><span>MS</span> DevBlog</a></h1></div>
             <div id="tooplate_menu">
-                {% include "blog/includes/main_menu.html" with selected=selected %}
-                <ul>
-                    {% if user.is_authenticated %}
-                        <li class="last"><a href="{% url 'profile' %}">{{ user.username }}</a></li>
-                        <li><a href="{% url 'logout' %}">Выход</a></li>
-                    {% else %}
-                        <li class="last"><a href="{% url 'register' %}">Регистрация</a></li>
-                        <li><a href="{% url 'login' %}">Войти</a></li>
-                    {% endif %}
-                </ul>
+                {% include "blog/includes/main_menu.html" with selected=selected user=user%}
             </div>
         </div> <!-- end plate_header-->
 
@@ -43,20 +34,16 @@
                     <div class="col_w200 lp_box float_r">
                         <h3>Категории</h3>
                         <ul class="tooplate_list">
-                            <li><a href="#">Linux</a></li>
-                            <li><a href="#">Python</a></li>
-                            <li><a href="#">Django</a></li>
-                            <li><a href="#">Flask</a></li>
-                            <li><a href="#">FastAPI</a></li>
+                            {% for category in categories %}
+                                <li><a href="{% url 'blog:category' category.slug %}">{{ category.title }}</a></li>
+                            {% endfor %}
                         </ul>
 
                         <h3>Новые посты</h3>
                         <ul class="tooplate_list">
-                            <li><a href="#">Django from request to response</a></li>
-                            <li><a href="#">Python</a></li>
-                            <li><a href="#">Django</a></li>
-                            <li><a href="#">Flask</a></li>
-                            <li><a href="#">FastAPI</a></li>
+                            {% for new_post in new_posts %}
+                                <li><a href="{% url 'blog:post-detail' new_post.slug %}">{{ new_post.title }}</a></li>
+                            {% endfor %}
                         </ul>
 
                         <h3>Новые комментарии</h3>

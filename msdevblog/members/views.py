@@ -21,6 +21,7 @@ class UserRegistrationView(CreateView):
     form_class = UserRegistrationForm
     template_name = 'registration/register.html'
     success_url = reverse_lazy('login')
+    extra_context = {'selected': 'register'}
 
 
 class UserPasswordChangeView(PasswordChangeView):
