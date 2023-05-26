@@ -140,6 +140,7 @@ AUTH_USER_MODEL = "members.AdvUser"
 
 
 # Переадресацию после регистрации и выхода пользователя
+LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'blog:home'
 LOGOUT_REDIRECT_URL = 'blog:home'
 

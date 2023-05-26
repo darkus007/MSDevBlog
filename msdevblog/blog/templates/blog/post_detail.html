@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="post_box_content">
-    <h2><a href="{{ post.get_absolute_url }}">{{ object.title }}</a></h2>
+    <h2><a href="{{ object.get_absolute_url }}">{{ object.title }}</a></h2>
     <p>{{ object.body }}</p>
     <div class="cleaner h10"></div>
     <div class="d-flex-space-between">

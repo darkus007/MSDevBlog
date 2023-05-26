@@ -28,7 +28,7 @@ class PostCreateView(UserPassesTestMixin, CreateView):
     extra_context = {'selected': 'create_post'}
 
     def test_func(self):
-        return self.request.user.is_superuser
+        return self.request.user.is_authenticated
 
     def form_valid(self, form):
         """ Передаем пользователя в форму """
@@ -40,11 +40,11 @@ class PostUpdateView(UserPassesTestMixin, UpdateView):
     model = Post
     form_class = PostForm
     template_name = 'blog/post_create.html'
-    selected = 'create_post'
     extra_context = {'selected': 'create_post'}
 
     def test_func(self):
-        return self.request.user.is_superuser
+        post_owner = Post.objects.get(slug=self.kwargs['slug'])
+        return bool(self.request.user.is_authenticated and post_owner.user == self.request.user)
 
     def get_queryset(self):
         return Post.objects.filter(slug=self.kwargs['slug']).select_related('cat', 'user')
