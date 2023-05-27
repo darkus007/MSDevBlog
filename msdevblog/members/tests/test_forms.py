@@ -2,6 +2,8 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase, Client
 from django.conf import settings
 
+from captcha.conf import settings as captcha_settings
+
 from members.forms import UserRegistrationForm, UserProfileForm, UserPasswordChangeForm
 
 
@@ -14,11 +16,13 @@ class FormsTestCaseSettings(TestCase):  # python manage.py test members.tests.te
                                                         email='test@testsite.ru',
                                                         password='test_user_password')
         settings.SECRET_KEY = "some_test_secret_key!"
+        captcha_settings.CAPTCHA_TEST_MODE = True  # отключаем проверку captcha
 
     @classmethod
     def tearDownClass(cls) -> None:
         super().tearDownClass()
         settings.SECRET_KEY = None
+        captcha_settings.CAPTCHA_TEST_MODE = False
 
 
 class UserRegistrationFormTestCase(FormsTestCaseSettings):
@@ -27,7 +31,9 @@ class UserRegistrationFormTestCase(FormsTestCaseSettings):
             'username': 'test_user_form',
             'email': 'test2@testsite.ru',
             'password1': 'Password1$',
-            'password2': 'Password1$'
+            'password2': 'Password1$',
+            'captcha_0': 'dummy-value',
+            'captcha_1': 'PASSED'
         }
         form = UserRegistrationForm(data=form_data)
         self.assertTrue(form.is_valid(), form.errors)
@@ -40,7 +46,9 @@ class UserRegistrationFormTestCase(FormsTestCaseSettings):
             'email': 'test3@testsite.ru',
             'is_email_activated': True,
             'password1': 'Password1$',
-            'password2': 'Password1$'
+            'password2': 'Password1$',
+            'captcha_0': 'dummy-value',
+            'captcha_1': 'PASSED'
         }
         form = UserRegistrationForm(data=form_data)
         self.assertTrue(form.is_valid(), form.errors)

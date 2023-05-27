@@ -1,6 +1,8 @@
 from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
 from django import forms
 
+from captcha.fields import CaptchaField
+
 from .models import AdvUser
 from .utilities import send_activation_notification
 
@@ -10,9 +12,12 @@ class UserRegistrationForm(UserCreationForm):
     # делаем поле обязательным
     email = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'required input_field'}))
 
+    captcha = CaptchaField(label='Введите текст с картинки',
+                           error_messages={'invalid': 'Неверно указан текст с картинки'})
+
     class Meta:
         model = AdvUser
-        fields = ('username', 'email', 'password1', 'password2')
+        fields = ('username', 'email', 'password1', 'password2', 'captcha')
         labels = {'username': 'Логин'}
 
     def __init__(self, *args, **kwargs):
@@ -21,6 +26,7 @@ class UserRegistrationForm(UserCreationForm):
         self.fields['username'].widget.attrs['class'] = 'required input_field'
         self.fields['password1'].widget.attrs['class'] = 'required input_field'
         self.fields['password2'].widget.attrs['class'] = 'required input_field'
+        self.fields['captcha'].widget.attrs['class'] = 'required input_field'
 
     def save(self, commit=True):
         """
