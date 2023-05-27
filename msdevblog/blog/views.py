@@ -20,6 +20,9 @@ class PostDetailView(DetailView):
     template_name = 'blog/post_detail.html'
     extra_context = {'selected': 'detail'}
 
+    def get_queryset(self):
+        return Post.objects.filter(slug=self.kwargs['slug'])
+
 
 class PostCreateView(UserPassesTestMixin, CreateView):
     model = Post
@@ -56,4 +59,4 @@ class ByCategoryListView(ListView):
 
     def get_queryset(self):
         cat = get_object_or_404(Category, slug=self.kwargs['slug'])
-        return Post.objects.filter(cat=cat)
+        return Post.published.filter(cat=cat)

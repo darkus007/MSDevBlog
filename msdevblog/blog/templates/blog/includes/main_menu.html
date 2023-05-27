@@ -13,8 +13,14 @@
         {% else %}
             <li><a href="{% url 'blog:post-new' %}">Новый пост</a></li>
         {% endif %}
-        <li class="last"><a href="{% url 'profile' %}">{{ user.username }}</a></li>
-        <li><a href="{% url 'logout' %}">Выход</a></li>
+
+        {% if selected == 'profile' %}
+            <li class="last"><a href="{% url 'profile' %}" class="current">{{ user.username }}</a></li>
+        {% else %}
+            <li class="last"><a href="{% url 'profile' %}">{{ user.username }}</a></li>
+        {% endif %}
+
+    <li><a href="{% url 'logout' %}">Выход</a></li>
     {% else %}
         {% if selected == 'register' %}
             <li class="last"><a href="{% url 'register' %}" class="current">Регистрация</a></li>

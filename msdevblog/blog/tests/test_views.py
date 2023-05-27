@@ -149,5 +149,4 @@ class ViewsTestSettings(TestCase):   # python manage.py test blog.tests.test_vie
     def test_post_by_category_list_view(self):
         response = self.client.get(reverse('blog:category', kwargs={'slug': self.category.slug}))
         object_list = response.context.get('object_list')
-        self.assertTrue(object_list)                                # object_list не пуст
-        self.assertTrue(len(object_list), 1)                        # только опубликованные посты
+        self.assertEqual(len(object_list), 1)                        # только опубликованные посты

@@ -1,12 +1,9 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import PasswordChangeView
 from django.http import HttpResponseRedirect
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
-from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_protect
-from django.views.decorators.debug import sensitive_post_parameters
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_POST, require_GET
 from django.views.generic import CreateView
 from django.core.signing import BadSignature
 from django.contrib import messages
@@ -15,6 +12,7 @@ from django.forms.models import model_to_dict
 from .forms import UserRegistrationForm, UserProfileForm, UserPasswordChangeForm
 from .models import AdvUser
 from .utilities import signer, send_activation_notification
+from blog.models import Post
 
 
 class UserRegistrationView(CreateView):
@@ -29,35 +27,36 @@ class UserPasswordChangeView(PasswordChangeView):
     template_name = 'registration/change_password.html'
     success_url = reverse_lazy('password-changed')
 
-    # метод переопределен с целью указать правильную переадресацию в login_required
-    @method_decorator(sensitive_post_parameters())
-    @method_decorator(csrf_protect)
-    @method_decorator(login_required(login_url=reverse_lazy('login')))
-    def dispatch(self, *args, **kwargs):
-        return super().dispatch(*args, **kwargs)
-
 
 def password_changed(request):
     return render(request, 'registration/password_changed.html')
 
 
 @login_required(login_url=reverse_lazy('login'))
+@require_GET
 def user_profile(request):
-    """ Отображение и обновление профиля пользователя. """
-    user = get_object_or_404(AdvUser, id=request.user.id)
+    """ Отображение профиля пользователя. """
+    user_posts = Post.objects.filter(user=request.user).values('title', 'status', 'slug')
+    return render(request, 'registration/user_profile.html', {'user_posts': user_posts, 'selected': 'profile'})
+
+
+@login_required(login_url=reverse_lazy('login'))
+def user_update_profile(request):
+    """ Обновление профиля пользователя. """
     if request.method == 'POST':
         form = UserProfileForm(request.POST)
         if form.is_valid():
             # Поля формы успешно прошли валидацию, обновляем пользователя
-            user.first_name = form.cleaned_data['first_name']
-            user.last_name = form.cleaned_data['last_name']
-            user.bio = form.cleaned_data['bio']
-            user.git = form.cleaned_data['git']
-            user.save()
+            request.user.first_name = form.cleaned_data['first_name']
+            request.user.last_name = form.cleaned_data['last_name']
+            request.user.bio = form.cleaned_data['bio']
+            request.user.git = form.cleaned_data['git']
+            request.user.save()
             messages.add_message(request, messages.SUCCESS, f'Профиль обновлен.')
+            return redirect(reverse('profile'))
     else:
-        form = UserProfileForm(data=model_to_dict(user))
-    return render(request, 'registration/user_profile.html', {'form': form})
+        form = UserProfileForm(data=model_to_dict(request.user))
+    return render(request, 'registration/user_update_profile.html', {'form': form, 'selected': 'profile'})
 
 
 @require_POST

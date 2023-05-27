@@ -11,13 +11,14 @@ class ViewsTestCase(TestCase):  # python manage.py test members.tests.test_views
     @classmethod
     def setUpClass(cls) -> None:
         super().setUpClass()
+        settings.SECRET_KEY = "some_test_secret_key!"
+
         cls.user = get_user_model().objects.create_user(username='test_user',
                                                         email='test@testsite.ru',
                                                         password='test_user_password')
         cls.client = Client()
         cls.auth_client = Client()
-
-        settings.SECRET_KEY = "some_test_secret_key!"
+        cls.auth_client.force_login(cls.user)
 
     @classmethod
     def tearDownClass(cls) -> None:
@@ -37,7 +38,6 @@ class ViewsTestCase(TestCase):  # python manage.py test members.tests.test_views
                              fetch_redirect_response=True)
 
     def test_user_password_change_view_logged(self):
-        self.auth_client.login(username='test_user', password='test_user_password')
         response = self.auth_client.get('/members/password/')
         self.assertEqual(response.status_code, 200)
 
@@ -54,24 +54,33 @@ class ViewsTestCase(TestCase):  # python manage.py test members.tests.test_views
                              fetch_redirect_response=True)
 
     def test_user_profile_get_page_logged(self):
-        # Логиним пользователя
-        self.auth_client.login(username='test_user', password='test_user_password')
         response = self.auth_client.get(reverse('profile'))
         # Проверка, что пользователь залогинился
         self.assertEqual(str(response.context['user']), 'test_user')
-        # Проверка ответа на запрос
         self.assertEqual(response.status_code, 200)
 
-    def test_user_profile_post_data(self):
-        self.auth_client.login(username='test_user', password='test_user_password')
+    def test_user_update_profile_get_page_not_logged(self):
+        response = self.client.get(reverse('update-profile'))
+        self.assertRedirects(response,
+                             expected_url='/members/login/?next=/members/update-profile/',
+                             status_code=302,
+                             target_status_code=200,
+                             fetch_redirect_response=True)
+
+    def test_user_update_profile_post_data_logged(self):
         form_data = {
             'first_name': 'first_name',
             'last_name': 'last_name',
             'bio': 'About user',
             'git': 'www.github.com'
         }
-        response = self.auth_client.post(reverse('profile'), data=form_data)
-        self.assertEqual(response.status_code, 200)
+        response = self.auth_client.post(reverse('update-profile'), data=form_data)
+
+        self.assertRedirects(response,
+                             expected_url='/members/profile/',
+                             status_code=302,
+                             target_status_code=200,
+                             fetch_redirect_response=True)
         self.user.refresh_from_db()
         self.assertEqual(self.user.first_name, 'first_name')
         self.assertEqual(self.user.last_name, 'last_name')
@@ -112,7 +121,6 @@ class ViewsTestCase(TestCase):  # python manage.py test members.tests.test_views
                              fetch_redirect_response=True)
 
     def test_send_email_activate_letter_logged(self):
-        self.auth_client.login(username='test_user', password='test_user_password')
         response = self.auth_client.get(reverse('repeat-send-email'))
         self.assertEqual(str(response.context['user']), 'test_user')
         self.assertRedirects(response,

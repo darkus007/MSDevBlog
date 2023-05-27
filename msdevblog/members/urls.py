@@ -10,6 +10,7 @@ urlpatterns = [
 
     path('repeat-send-email/', send_email_activate_letter, name='repeat-send-email'),
     path('profile/', user_profile, name='profile'),
+    path('update-profile/', user_update_profile, name='update-profile'),
 
     path('password/', UserPasswordChangeView.as_view(), name='change-password'),
     path('password-success/', password_changed, name='password-changed'),
