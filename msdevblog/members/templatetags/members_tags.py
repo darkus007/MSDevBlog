@@ -13,6 +13,4 @@ def value_or_empty(value: Any) -> Any | str:
     возвращает строку '----------------'
     иначе возвращает переданный элемент.
     """
-    if not value:
-        return '----------------'
-    return value
+    return '----------------' if not value else value

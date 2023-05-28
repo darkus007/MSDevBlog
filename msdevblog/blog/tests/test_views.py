@@ -3,20 +3,24 @@ from django.test import TestCase, Client
 from django.urls import reverse
 from django.conf import settings
 
-from blog.models import Category, Post
+from blog.models import Category, Post, Comment
 
 
-class ViewsTestSettings(TestCase):   # python manage.py test blog.tests.test_views
+class ViewsTestSettings(TestCase):  # python manage.py test blog.tests.test_views
     @classmethod
     def setUpClass(cls) -> None:
         super().setUpClass()
-        settings.SECRET_KEY = "some_test_secret_key!"   # до force_login иначе последний не сработает
+        settings.SECRET_KEY = "some_test_secret_key!"  # до force_login иначе пользователь не зарегистрируется
         cls.user = get_user_model().objects.create_user(username='test_user',
                                                         email='test_user@mail.ru',
                                                         password='test_user_password')
         cls.not_owner_user = get_user_model().objects.create_user(username='test_not_owner_user',
                                                                   email='test_not_owner_user_password@mail.ru',
                                                                   password='test_not_owner_user_password')
+        cls.user_is_email_activated_true = get_user_model().objects.create_user(username='email_activated_user',
+                                                                                email='email_activated@mail.ru',
+                                                                                password='email_activated_password',
+                                                                                is_email_activated=True)
 
         cls.category = Category.objects.create(
             title='Тест категории',
@@ -45,6 +49,8 @@ class ViewsTestSettings(TestCase):   # python manage.py test blog.tests.test_vie
         cls.auth_client.force_login(cls.user)
         cls.auth_not_owner_user_client = Client()
         cls.auth_not_owner_user_client.force_login(cls.not_owner_user)
+        cls.auth_email_activated_client = Client()
+        cls.auth_email_activated_client.force_login(cls.user_is_email_activated_true)
 
     @classmethod
     def tearDownClass(cls) -> None:
@@ -54,14 +60,42 @@ class ViewsTestSettings(TestCase):   # python manage.py test blog.tests.test_vie
     def test_post_list_view(self):
         response = self.client.get(reverse('blog:home'))
         object_list = response.context.get('object_list')
-        self.assertTrue(object_list)                                # object_list не пуст
+        self.assertTrue(object_list)  # object_list не пуст
         self.assertEqual(response.context.get('selected'), 'home')  # extra_context содержит home
-        self.assertTrue(len(object_list), 1)                        # только опубликованные посты
+        self.assertTrue(len(object_list), 1)  # только опубликованные посты
 
-    def test_post_detail_view(self):
+    def test_post_detail_get(self):
         response = self.client.get(reverse('blog:post-detail', kwargs={'slug': 'nazvanie-opublikovannogo-posta'}))
         self.assertEqual(response.context.get('object'), self.post_published)
-        self.assertEqual(response.context.get('selected'), 'detail')    # extra_context содержит detail
+        self.assertFalse(response.context.get('is_author'))
+
+    def test_post_detail_get_404(self):
+        response = self.client.get(reverse('blog:post-detail', kwargs={'slug': 'not-found'}))
+        self.assertEqual(response.status_code, 404)
+
+    def test_post_detail__post_not_auth(self):
+        form_data = {'body': 'Comment post_not_auth'}
+        response = self.client.post(
+            reverse('blog:post-detail', kwargs={'slug': 'nazvanie-opublikovannogo-posta'}), data=form_data)
+        self.assertEqual(response.context.get('object'), self.post_published)
+        self.assertFalse(Comment.objects.filter(body='Comment post_not_auth'))
+        self.assertFalse(response.context.get('is_author'))
+
+    def test_post_detail__post_auth_user_email_activated_false(self):
+        form_data = {'body': 'Comment email_activated_false'}
+        response = self.auth_client.post(    # у данного пользователя e-mail не подтвержден
+            reverse('blog:post-detail', kwargs={'slug': 'nazvanie-opublikovannogo-posta'}), data=form_data)
+        self.assertEqual(response.context.get('object'), self.post_published)
+        self.assertFalse(Comment.objects.filter(body='Comment email_activated_false'))
+        self.assertTrue(response.context.get('is_author'))
+
+    def test_post_detail__post_auth_user_email_activated_true(self):
+        form_data = {'body': 'Comment email_activated_false'}
+        response = self.auth_email_activated_client.post(
+            reverse('blog:post-detail', kwargs={'slug': 'nazvanie-opublikovannogo-posta'}), data=form_data)
+        self.assertEqual(response.context.get('object'), self.post_published)
+        self.assertTrue(Comment.objects.filter(body='Comment email_activated_false'))
+        self.assertFalse(response.context.get('is_author'))
 
     def test_post_create_view_not_auth_user(self):
         data = {
@@ -149,4 +183,4 @@ class ViewsTestSettings(TestCase):   # python manage.py test blog.tests.test_vie
     def test_post_by_category_list_view(self):
         response = self.client.get(reverse('blog:category', kwargs={'slug': self.category.slug}))
         object_list = response.context.get('object_list')
-        self.assertEqual(len(object_list), 1)                        # только опубликованные посты
+        self.assertEqual(len(object_list), 1)  # только опубликованные посты

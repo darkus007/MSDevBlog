@@ -1,5 +1,7 @@
 {% extends 'blog/base.html' %}
 
+{% load blog_tags %}
+
 {% block content %}
 <div class="post_box_content">
     <h2><a href="{{ object.get_absolute_url }}">{{ object.title }}</a></h2>
@@ -7,7 +9,57 @@
     <div class="cleaner h10"></div>
     <div class="d-flex-space-between">
         <a class="more float_r" href="" onclick="javascript:history.back(); return false;">Назад</a>
-        <a class="more float_l" href="{% url 'blog:post-update' post.slug %}">Править</a>
+        {% if is_author %}
+            <a class="more float_l" href="{% url 'blog:post-update' object.slug %}">Править</a>
+        {% endif %}
     </div>
 </div>
+
+<div class="post_box_content">
+    <br><br>
+    <h4>Комментарии</h4>
+</div>
+
+{% if user.is_authenticated %}
+    {% if user.is_email_activated %}
+    <div id="cp_contact_form">
+        <form method="post" name="contact">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="cleaner h10"></div>
+            <input type="submit" value="Отправить" id="submit" name="submit" class="submit_btn float_l" />
+        </form>
+    </div>
+    {% else %}
+        <div class="post_box_content">
+            <div class="cleaner h10"></div>
+            <p>Подтвердите адрес E-mail: {{ user.email }} чтобы оставить комментарий.</p>
+            <p><a href="{% url 'repeat-send-email' %}">Повторно отправить сообщение для активации e-mail.</a></p>
+            <div class="cleaner h10"></div>
+        </div>
+    {% endif %}
+{% else %}
+    <div class="post_box_content">
+        <div class="cleaner h10"></div>
+        <a href="{% url 'login' %}">Авторизуйтесь</a> чтобы оставить комментарий.
+    </div>
+{% endif %}
+
+{% if comments %}
+<div class="post_box_content">
+    <div class="cleaner h10"></div>
+</div>
+    {% for comment in comments %}
+    <div class="post_box">
+        <div class="post_box_date">
+            {{ comment.time_created|date:"d-m-Y H:i" }}
+            <span>{{ comment.user.username }}</span>
+        </div>
+
+        <div class="post_box_comment_content"><p>{{ comment.body|extra_space }}</p><hr></div>
+    </div>
+    {% endfor %}
+<div class="cleaner h10"></div>
+<div class="cleaner h10"></div>
+{% endif %}
 {% endblock %}

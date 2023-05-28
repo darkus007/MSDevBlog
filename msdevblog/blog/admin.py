@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from blog.models import Category, Post
+from blog.models import Category, Post, Comment
 
 
 @admin.register(Category)
@@ -20,3 +20,10 @@ class PostAdmin(admin.ModelAdmin):
     raw_id_fields = ['user']  # поисковый виджет вместо выпадающего списка авторов
     date_hierarchy = 'time_updated'  # навигация по датам (размещены под поиском)
     ordering = ['status', 'time_updated']    # порядок сортировки при отображении
+
+
+@admin.register(Comment)
+class CommentAdmin(admin.ModelAdmin):
+    list_display = ['post', 'user', 'body', 'time_created']  # поля для отображения
+    search_fields = ['post', 'user']  # поиск по этим полям
+    ordering = ['time_created', 'post', 'user']  # порядок сортировки при отображении

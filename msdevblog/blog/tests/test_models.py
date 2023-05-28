@@ -17,7 +17,7 @@ AttributeError: type object '<имя_класса>' has no attribute 'cls_atomic
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 
-from blog.models import Category, Post
+from blog.models import Category, Post, Comment
 
 
 class Settings(TestCase):   # python manage.py test blog.tests.test_models
@@ -113,3 +113,27 @@ class CategoryTestCase(Settings):
 
     def test_str(self):
         self.assertEqual(self.category.title, self.category.__str__())
+
+
+class CommentTestCase(Settings):
+    def test_verbose_name(self):
+        """ verbose_name в полях совпадает с ожидаемым. """
+
+        comment = Comment.objects.create(
+            user=self.user,
+            post=self.post_published,
+            reply_post=None,
+            body='Текст комментария'
+        )
+
+        field_verbose = {
+            'user': 'Автор комментария',
+            'post': 'Пост',
+            'reply_post': 'Комментарий на который отвечаем',
+            'body': 'Текст комментария',
+            'time_created': 'Время создания'
+        }
+        for field, expected_value in field_verbose.items():
+            with self.subTest(field=field):
+                self.assertEqual(
+                    comment._meta.get_field(field).verbose_name, expected_value)

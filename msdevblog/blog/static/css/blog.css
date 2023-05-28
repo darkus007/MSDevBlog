@@ -197,7 +197,7 @@ h6 { font-size: 14px; margin: 0 0 5px; padding: 0; }
 
 #tooplate_middle {
 	clear: both;
-	width: 760px;
+	width: 700px;
 	padding: 10px 100px 30px;
 	overflow: hidden;
 	background: url(../../static/images/mid_divider.png) bottom center no-repeat
@@ -246,8 +246,27 @@ h6 { font-size: 14px; margin: 0 0 5px; padding: 0; }
 
 .post_box {
 	clear: both;
-	padding-bottom: 10px;
+	padding-left: 15px;
 	background: repeat-x bottom;
+}
+
+.post_box_date {
+	float: left;
+	width: 200px;
+	font-size: 12px;
+	font-weight: bold;
+}
+
+
+.post_box_date span {
+	display: block;
+	font-weight: normal;
+}
+
+.post_box_comment_content {
+	float: right;
+	width: 480px;
+	white-space: pre-wrap;
 }
 
 .post_box_content {
@@ -274,6 +293,10 @@ h6 { font-size: 14px; margin: 0 0 5px; padding: 0; }
 
 .post_box_content ul li h3 {
     margin-bottom: 5px;
+}
+
+.post_box_content .comment {
+
 }
 
 .post_box h2 {

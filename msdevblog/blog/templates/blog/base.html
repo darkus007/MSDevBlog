@@ -18,20 +18,12 @@
             <div id="tooplate_menu">
                 {% include "blog/includes/main_menu.html" with selected=selected user=user%}
             </div>
-        </div> <!-- end plate_header-->
-
-<!--        <div id="tooplate_middle">-->
-<!--            <div id="mid_title">-->
-<!--                Blog-->
-<!--            </div>-->
-<!--            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris iaculis nulla vitae ante congue iaculis. Nunc vitae sapien sed neque porttitor egestas sit amet ut ligula.</p>-->
-<!--        </div> -->
-        <!-- end of middle -->
+        </div>
 
         <div id="tooplate_main">
             <div class="col_w960 hr_divider">
-
                     <div class="col_w200 lp_box float_r">
+                        <div class="cleaner h10"></div>
                         <h3>Категории</h3>
                         <ul class="tooplate_list">
                             {% for category in categories %}

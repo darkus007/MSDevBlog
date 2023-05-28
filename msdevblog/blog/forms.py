@@ -1,7 +1,7 @@
 from django import forms
 
 from msdevblog.utilites import slugify
-from .models import Post
+from .models import Post, Comment
 
 
 class PostForm(forms.ModelForm):
@@ -28,4 +28,15 @@ class PostForm(forms.ModelForm):
                                            'value': 'none', 'type': 'hidden'}),
             'body': forms.Textarea(attrs={'class': 'required input_field'}),
             'status': forms.Select(attrs={'class': 'required input_field'}),
+        }
+
+
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ('body', )
+        labels = {'body': 'Ваш комментарий'}
+
+        widgets = {
+            'body': forms.Textarea(attrs={'class': 'required input_field'}),
         }

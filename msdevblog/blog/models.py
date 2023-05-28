@@ -60,3 +60,20 @@ class Post(models.Model):
         verbose_name = 'Пост'
         verbose_name_plural = 'Посты'
         ordering = ['-time_created', 'cat']
+
+
+class Comment(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
+                             related_name='comments', verbose_name='Автор комментария')
+    post = models.ForeignKey(Post, on_delete=models.CASCADE,
+                             related_name='comments', verbose_name='Пост')
+    reply_post = models.ForeignKey('Comment', on_delete=models.DO_NOTHING,
+                                   null=True, blank=True,
+                                   verbose_name='Комментарий на который отвечаем')
+    body = models.TextField(verbose_name='Текст комментария')
+    time_created = models.DateTimeField(auto_now_add=True, verbose_name='Время создания')
+
+    class Meta:
+        verbose_name = 'Комментарий'
+        verbose_name_plural = 'Комментарии'
+        ordering = ['-time_created']

@@ -1,9 +1,9 @@
 from django.contrib.auth.mixins import UserPassesTestMixin
-from django.views.generic import ListView, DetailView, CreateView, UpdateView
-from django.shortcuts import get_object_or_404
+from django.views.generic import ListView, CreateView, UpdateView
+from django.shortcuts import get_object_or_404, render
 
-from blog.models import Post, Category
-from blog.forms import PostForm
+from blog.models import Post, Category, Comment
+from blog.forms import PostForm, CommentForm
 
 
 class PostListView(ListView):
@@ -15,13 +15,30 @@ class PostListView(ListView):
         return Post.published.all()
 
 
-class PostDetailView(DetailView):
-    model = Post
-    template_name = 'blog/post_detail.html'
-    extra_context = {'selected': 'detail'}
+# class PostDetailView(DetailView):
+#     model = Post
+#     template_name = 'blog/post_detail.html'
+#     extra_context = {'selected': 'detail'}
+#
+#     def get_queryset(self):
+#         return Post.objects.filter(slug=self.kwargs['slug'])
 
-    def get_queryset(self):
-        return Post.objects.filter(slug=self.kwargs['slug'])
+
+def post_detail(request, slug):
+    post = get_object_or_404(Post, slug=slug)
+
+    if request.method == 'POST' and request.user.is_authenticated and request.user.is_email_activated:
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            form.instance.user = request.user
+            form.instance.post = post
+            form.save()
+
+    form = CommentForm()
+    comments = Comment.objects.filter(post=post)
+    is_author = bool(request.user == post.user)
+    return render(request, 'blog/post_detail.html',
+                  {'object': post, 'form': form, 'comments': comments, 'is_author': is_author})
 
 
 class PostCreateView(UserPassesTestMixin, CreateView):
