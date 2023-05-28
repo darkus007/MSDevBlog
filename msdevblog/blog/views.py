@@ -2,9 +2,12 @@ from django.contrib.auth.mixins import UserPassesTestMixin
 from django.core.exceptions import ValidationError
 from django.views.generic import ListView, CreateView, UpdateView
 from django.shortcuts import get_object_or_404, render
+from django.contrib import messages
+from django.conf import settings
 
-from blog.models import Post, Category, Comment
-from blog.forms import PostForm, CommentForm
+from .models import Post, Category, Comment
+from .forms import PostForm, CommentForm, FeedbackForm
+from .utilities import send_feedback_mail
 
 
 class PostListView(ListView):
@@ -17,7 +20,7 @@ class PostListView(ListView):
 
 
 def post_detail(request, slug):
-    post = get_object_or_404(Post, slug=slug)
+    post = get_object_or_404(Post.objects, slug=slug)
 
     if request.method == 'POST' and request.user.is_authenticated and request.user.is_email_activated:
         form = CommentForm(request.POST)
@@ -71,3 +74,24 @@ class ByCategoryListView(ListView):
     def get_queryset(self):
         cat = get_object_or_404(Category, slug=self.kwargs['slug'])
         return Post.published.filter(cat=cat)
+
+
+def feedback(request):
+    """ Отправляет сообщение администратору сайта. """
+    if request.method == 'POST':
+        form = FeedbackForm(request.POST)
+        if form.is_valid():
+            send = send_feedback_mail(
+                subject=form.cleaned_data['theme'],
+                message=form.cleaned_data['text'] + '\nE-mail: ' + form.cleaned_data['email'],
+                from_email=settings.SERVER_EMAIL,
+                recipient_list=settings.ADMINS
+            )
+            if send:
+                messages.add_message(request, messages.SUCCESS, 'Ваше сообщение отправлено!')
+                form = FeedbackForm()
+            else:
+                messages.add_message(request, messages.SUCCESS, 'Что то пошло не так, попробуйте повторить позже...')
+    else:
+        form = FeedbackForm()
+    return render(request, 'blog/feedback.html', {'form': form, 'selected': 'feedback'})

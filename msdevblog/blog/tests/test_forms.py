@@ -2,7 +2,9 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase, Client
 from django.conf import settings
 
-from blog.forms import PostForm, CommentForm
+from captcha.conf import settings as captcha_settings
+
+from blog.forms import PostForm, CommentForm, FeedbackForm
 from blog.models import Post, Category, Comment
 
 
@@ -11,6 +13,7 @@ class FormsTestCaseSettings(TestCase):  # python manage.py test blog.tests.test_
     def setUpClass(cls) -> None:
         super().setUpClass()
         settings.SECRET_KEY = "some_test_secret_key!"
+        captcha_settings.CAPTCHA_TEST_MODE = True  # отключаем проверку captcha
 
         cls.user = get_user_model().objects.create_user(username='test_user',
                                                         email='test@testsite.ru',
@@ -36,6 +39,7 @@ class FormsTestCaseSettings(TestCase):  # python manage.py test blog.tests.test_
     def tearDownClass(cls) -> None:
         super().tearDownClass()
         settings.SECRET_KEY = None
+        captcha_settings.CAPTCHA_TEST_MODE = False
 
 
 class PostFormTestCase(FormsTestCaseSettings):
@@ -83,3 +87,16 @@ class CommentFormTestCase(FormsTestCaseSettings):
         form.instance.post = self.post_published    # передаем пост
         form.save()
         self.assertTrue(Comment.objects.filter(body='New comment.'))
+
+
+class FeedbackFormTestCase(FormsTestCaseSettings):
+    def test_save(self):
+        form_data = {
+            'theme': 'Feedback',
+            'text': 'Feedback text',
+            'email': 'Feedback@mail.ru',
+            'captcha_0': 'dummy-value',
+            'captcha_1': 'PASSED'
+        }
+        form = FeedbackForm(data=form_data)
+        self.assertTrue(form.is_valid(), form.errors)

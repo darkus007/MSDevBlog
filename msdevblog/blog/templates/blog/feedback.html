@@ -1,0 +1,29 @@
+{% extends 'blog/base.html' %}
+
+{% block content %}
+
+<div class="post_box_content">
+    <h2>Обратная связь</h2>
+
+    {% if messages %}
+    <div class="cleaner h10"></div>
+        {% for message in messages %}
+        <p {% if message.tags %} class="{{ message.tags }}"{% endif %}>
+            {{ message }}
+        </p>
+        {% endfor %}
+    <div class="cleaner h10"></div>
+    {% endif %}
+
+    <div id="cp_contact_form">
+        <form method="post" name="contact">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="cleaner h10"></div>
+            <div class="cleaner h10"></div>
+            <input type="submit" value="Отправить" id="submit" name="submit" class="submit_btn float_l" />
+        </form>
+    </div>
+</div>
+
+{% endblock %}

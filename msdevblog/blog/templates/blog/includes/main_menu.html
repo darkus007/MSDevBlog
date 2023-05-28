@@ -4,7 +4,11 @@
     {% else %}
         <li><a href="{% url 'blog:home' %}">Главная</a></li>
     {% endif %}
-    <li><a href="#">Обратная связь</a></li>
+    {% if selected == 'feedback' %}
+        <li><a href="{% url 'blog:feedback' %}" class="current">Обратная связь</a></li>
+    {% else %}
+        <li><a href="{% url 'blog:feedback' %}">Обратная связь</a></li>
+    {% endif %}
     <li><a href="#">О сайте</a></li>
 
     {% if user.is_authenticated %}
