@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
 from django.test import TestCase, Client
 from django.urls import reverse
 from django.conf import settings
@@ -113,7 +114,7 @@ class ViewsTestSettings(TestCase):  # python manage.py test blog.tests.test_view
                              target_status_code=200,
                              fetch_redirect_response=True)
 
-    def test_post_create_view_auth_user(self):
+    def test_post_create_view_auth_user_email_activated_true(self):
         data = {
             'cat': self.category.id,
             'title': 'Saved Post name',
@@ -121,7 +122,7 @@ class ViewsTestSettings(TestCase):  # python manage.py test blog.tests.test_view
             'body': 'Post text.',
             'status': 'DF'
         }
-        response = self.auth_client.post(reverse('blog:post-new'), data=data, follow=True)
+        response = self.auth_email_activated_client.post(reverse('blog:post-new'), data=data, follow=True)
 
         if response.context.get('form'):
             print(f"\nОшибка при валидации формы: {response.context.get('form').errors}")
@@ -133,6 +134,17 @@ class ViewsTestSettings(TestCase):  # python manage.py test blog.tests.test_view
         self.assertEqual(saved_post.slug, data['slug'])
         self.assertEqual(saved_post.body, data['body'])
         self.assertEqual(saved_post.status, data['status'])
+
+    def test_post_create_view_auth_user_email_activated_false(self):
+        data = {
+            'cat': self.category.id,
+            'title': 'Saved Post name email_activated_false',
+            'slug': 'saved-post-name-emailactivatedfalse',
+            'body': 'Post text.',
+            'status': 'DF'
+        }
+        with self.assertRaises(ValidationError):
+            self.auth_client.post(reverse('blog:post-new'), data=data, follow=True)
 
     def test_post_update_view_not_auth_user(self):
         data = {

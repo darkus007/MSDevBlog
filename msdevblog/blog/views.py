@@ -1,4 +1,5 @@
 from django.contrib.auth.mixins import UserPassesTestMixin
+from django.core.exceptions import ValidationError
 from django.views.generic import ListView, CreateView, UpdateView
 from django.shortcuts import get_object_or_404, render
 
@@ -13,15 +14,6 @@ class PostListView(ListView):
 
     def get_queryset(self):
         return Post.published.all()
-
-
-# class PostDetailView(DetailView):
-#     model = Post
-#     template_name = 'blog/post_detail.html'
-#     extra_context = {'selected': 'detail'}
-#
-#     def get_queryset(self):
-#         return Post.objects.filter(slug=self.kwargs['slug'])
 
 
 def post_detail(request, slug):
@@ -52,6 +44,8 @@ class PostCreateView(UserPassesTestMixin, CreateView):
 
     def form_valid(self, form):
         """ Передаем пользователя в форму """
+        if not self.request.user.is_email_activated:
+            raise ValidationError("Пользователь не подтвердил e-mail!")
         form.instance.user = self.request.user
         return super().form_valid(form)
 
