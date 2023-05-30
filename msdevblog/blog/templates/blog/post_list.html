@@ -5,6 +5,7 @@
     <div class="post_box_content">
         <h2><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></h2>
         <p>{{ post.body|truncatewords_html:30 }}</p>
+        <p><span><b>{{ post.time_updated|date:"d-m-Y H:i" }}</b> - {{ post.user }}</span></p>
         <a class="more float_r" href="{{ post.get_absolute_url }}">Читать</a>
     </div>
     {% endfor %}

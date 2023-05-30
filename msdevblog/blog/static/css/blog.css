@@ -289,14 +289,18 @@ h6 { font-size: 14px; margin: 0 0 5px; padding: 0; }
 
 .post_box_content ul li a span{
     color: white;
+    float: none;
 }
 
 .post_box_content ul li h3 {
     margin-bottom: 5px;
 }
 
-.post_box_content .comment {
-
+.post_box_content span {
+    font-size: 12px;
+    font-style: italic;
+    float: right;
+    padding: 6px;
 }
 
 .post_box h2 {

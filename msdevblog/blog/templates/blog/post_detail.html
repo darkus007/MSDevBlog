@@ -6,6 +6,17 @@
 <div class="post_box_content">
     <h2><a href="{{ object.get_absolute_url }}">{{ object.title }}</a></h2>
     <p>{{ object.body }}</p>
+    <p><span><b>{{ object.time_updated|date:"d-m-Y H:i" }}</b></span></p>
+    <div class="cleaner h10"></div>
+    <h5>Автор статьи</h5>
+    <p>
+        <b>{{ object.user.username }}</b> {{ object.user.first_name }} {{ object.user.last_name }}<br>
+        {{ object.user.bio }}<br>
+        {% if object.user.git %}
+            <a target="_blank"  href="{{ object.user.git }}">GitHub {{ object.user.username }}</a>
+        {% endif %}
+    </p>
+    <div class="cleaner h10"></div>
     <div class="cleaner h10"></div>
     <div class="d-flex-space-between">
         <a class="more float_r" href="" onclick="javascript:history.back(); return false;">Назад</a>
