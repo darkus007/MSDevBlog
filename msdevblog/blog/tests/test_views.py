@@ -7,7 +7,7 @@ from django.contrib.messages import get_messages
 
 from captcha.conf import settings as captcha_settings
 
-from blog.models import Category, Post, Comment
+from blog.models import Category, Post, Comment, BlogTag
 
 
 class ViewsTestSettings(TestCase):  # python manage.py test blog.tests.test_views
@@ -38,6 +38,7 @@ class ViewsTestSettings(TestCase):  # python manage.py test blog.tests.test_view
             title='Название поста',
             slug='nazvanie-posta',
             body='Текст поста',
+            tags='tag'
         )
 
         cls.post_published = Post.objects.create(
@@ -48,6 +49,7 @@ class ViewsTestSettings(TestCase):  # python manage.py test blog.tests.test_view
             body='Текст опубликованного поста',
             status='PB'
         )
+        cls.post_published.tags.add('tag')
 
         cls.client = Client()
         cls.auth_client = Client()
@@ -116,6 +118,7 @@ class ViewsTestSettings(TestCase):  # python manage.py test blog.tests.test_view
             'title': 'Post name',
             'slug': 'nazvanie-posta',
             'body': 'Post text.',
+            'tags': 'tag',
             'status': 'PB'
         }
         expected_redirect_url = '/members/login/?next=%2Fblog%2Fnew-post%2F'
@@ -132,6 +135,7 @@ class ViewsTestSettings(TestCase):  # python manage.py test blog.tests.test_view
             'title': 'Saved Post name',
             'slug': 'saved-post-name',
             'body': 'Post text.',
+            'tags': 'tag',
             'status': 'DF'
         }
         response = self.auth_email_activated_client.post(reverse('blog:post-new'), data=data, follow=True)
@@ -153,6 +157,7 @@ class ViewsTestSettings(TestCase):  # python manage.py test blog.tests.test_view
             'title': 'Saved Post name email_activated_false',
             'slug': 'saved-post-name-emailactivatedfalse',
             'body': 'Post text.',
+            'tags': 'tag',
             'status': 'DF'
         }
         with self.assertRaises(ValidationError):
@@ -164,6 +169,7 @@ class ViewsTestSettings(TestCase):  # python manage.py test blog.tests.test_view
             'title': 'Название поста',
             'slug': 'nazvanie-posta',
             'body': 'Текст поста modif',
+            'tags': 'tag',
             'status': 'PB'
         }
         expected_redirect_url = '/members/login/?next=/blog/update-post/nazvanie-posta/'
@@ -180,6 +186,7 @@ class ViewsTestSettings(TestCase):  # python manage.py test blog.tests.test_view
             'title': 'Название поста',
             'slug': 'nazvanie-posta',
             'body': 'Текст поста modif',
+            'tags': 'tag',
             'status': 'PB'
         }
         response = self.auth_not_owner_user_client.post(reverse('blog:post-update', kwargs={'slug': 'nazvanie-posta'}),
@@ -192,6 +199,7 @@ class ViewsTestSettings(TestCase):  # python manage.py test blog.tests.test_view
             'title': 'Название поста',
             'slug': 'nazvanie-posta',
             'body': 'Текст поста modif',
+            'tags': 'tag',
             'status': 'PB'
         }
         response = self.auth_client.post(reverse('blog:post-update', kwargs={'slug': 'nazvanie-posta'}), data=data)
@@ -208,6 +216,11 @@ class ViewsTestSettings(TestCase):  # python manage.py test blog.tests.test_view
         response = self.client.get(reverse('blog:category', kwargs={'slug': self.category.slug}))
         object_list = response.context.get('object_list')
         self.assertEqual(len(object_list), 1)  # только опубликованные посты
+
+    def test_post_by_tag_list_view(self):
+        response = self.client.get(reverse('blog:tag', kwargs={'slug': 'tag'}))
+        object_list = response.context.get('object_list')
+        self.assertEqual(len(object_list), 1)  # только опубликованные посты с указанным tag
 
     def test_feedback_get(self):
         response = self.client.get(reverse('blog:feedback'))

@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from blog.models import Category, Post, Comment
+from blog.models import Category, Post, Comment, BlogTag
 
 
 @admin.register(Category)
@@ -27,3 +27,8 @@ class CommentAdmin(admin.ModelAdmin):
     list_display = ['post', 'user', 'body', 'time_created']  # поля для отображения
     search_fields = ['post', 'user']  # поиск по этим полям
     ordering = ['time_created', 'post', 'user']  # порядок сортировки при отображении
+
+
+@admin.register(BlogTag)
+class BlogTagAdmin(admin.ModelAdmin):
+    list_display = ['name', 'slug']  # поля для отображения

@@ -2,8 +2,30 @@ from django.conf import settings
 from django.db import models
 from django.urls import reverse
 
+from taggit.managers import TaggableManager
+from taggit.models import TagBase, GenericTaggedItemBase
+
 # стандартная библиотека не работает с русскими символами, используем свою
-from msdevblog.utilites import slugify
+from msdevblog.utilites import slugify as to_slugify
+
+
+# Пакет taggit использует функцию django.utils.text.slugify() для расчета slug.
+# Переопределяем модели Тегов с целью использовать свою функцию slugify.
+class BlogTag(TagBase):
+    def slugify(self, tag, i=None):
+        return to_slugify(tag)
+
+    class Meta:
+        verbose_name = 'Тег'
+        verbose_name_plural = 'Теги'
+
+
+class TaggedBlog(GenericTaggedItemBase):
+    tag = models.ForeignKey(
+        BlogTag,
+        on_delete=models.CASCADE,
+        related_name="%(app_label)s_%(class)s_items",
+    )
 
 
 class PublishedManager(models.Manager):
@@ -40,6 +62,7 @@ class Post(models.Model):
     time_updated = models.DateTimeField(auto_now=True, verbose_name='Время последнего изменения')
     status = models.CharField(max_length=2, choices=Status.choices,
                               default=Status.DRAFT, verbose_name='Статус')
+    tags = TaggableManager(through=TaggedBlog, verbose_name='Теги')
 
     published = PublishedManager()
     objects = models.Manager()  # указываем и менеджер по умолчанию, иначе он будет недоступен
@@ -50,7 +73,7 @@ class Post(models.Model):
     def save(self, *args, **kwargs):
         """ Добавляем slug на основе поля title, если он не был передан """
         if not self.slug or self.slug == '':
-            self.slug = slugify(self.title)
+            self.slug = to_slugify(self.title)
         return super().save(*args, **kwargs)
 
     def get_absolute_url(self):

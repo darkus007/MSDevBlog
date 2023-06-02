@@ -1,23 +1,35 @@
 from django import forms
 
 from captcha.fields import CaptchaField
+from django.core.exceptions import ValidationError
 
 from msdevblog.utilites import slugify
 from .models import Post, Comment
+
+from taggit.forms import TagWidget
 
 
 class PostForm(forms.ModelForm):
 
     def clean_slug(self):
-        """
-        Не запускается, если поле "slug" пустое!!!
-        По этой причине оно скрыто и добавлено значение none.
-        """
+        # Не запускается, если поле "slug" пустое!!!
+        # По этой причине оно скрыто и установлено значение 'none'.
         return slugify(self.cleaned_data['title'])
+
+    def clean_tags(self):
+        # Приложение виснет, если пытается записать теги с одинаковым slug
+        # Например пользователь передан теги 'Flask' и 'Фласк',
+        # дли них будет сформирован одинаковый slug = 'flask'
+        # при попытке сохранения это приведет к зависанию приложения.
+        tags = self.cleaned_data['tags']
+        tags_slug = {slugify(tag) for tag in tags}
+        if len(tags) != len(tags_slug):
+            raise ValidationError("Проверьте поле Теги, возможно имеются теги с одинаковым смыслом.")
+        return tags
 
     class Meta:
         model = Post
-        fields = ('cat', 'title', 'slug', 'body', 'status')
+        fields = ('cat', 'title', 'slug', 'body', 'tags', 'status')
 
         widgets = {
             'cat': forms.Select(attrs={'class': 'required input_field'}),
@@ -29,6 +41,7 @@ class PostForm(forms.ModelForm):
                                            'placeholder': 'URL-адрес поста (slug)',
                                            'value': 'none', 'type': 'hidden'}),
             'body': forms.Textarea(attrs={'class': 'required input_field'}),
+            'tags': TagWidget(attrs={'class': 'required input_field'}),
             'status': forms.Select(attrs={'class': 'required input_field'}),
         }
 

@@ -3,7 +3,7 @@ from django.test import TestCase
 from django.conf import settings
 
 from blog.models import Category, Post
-from blog.middlewares import categories, new_posts
+from blog.middlewares import categories, new_posts, tags_list
 
 
 class MiddlewaresTestCase(TestCase):   # python manage.py test blog.tests.test_middlewares
@@ -35,6 +35,7 @@ class MiddlewaresTestCase(TestCase):   # python manage.py test blog.tests.test_m
             body='Текст опубликованного поста',
             status='PB'
         )
+        cls.post.tags.add('tag')
 
     @classmethod
     def tearDownClass(cls) -> None:
@@ -45,6 +46,11 @@ class MiddlewaresTestCase(TestCase):   # python manage.py test blog.tests.test_m
         cats = categories(None)
         self.assertEqual(cats['categories'][0]['title'], self.category.title)
         self.assertEqual(cats['categories'][0]['slug'], self.category.slug)
+
+    def test_tags_list(self):
+        tags = tags_list(None)
+        self.assertEqual(tags['tags_list'][0].name, 'tag')
+        self.assertEqual(tags['tags_list'][0].slug, 'tag')
 
     def test_new_posts_fields(self):
         posts = new_posts(None)

@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'captcha',
+    'taggit',
 
     'blog.apps.BlogConfig',
     'members.apps.MembersConfig',
@@ -70,6 +71,7 @@ TEMPLATES = [
 
                 'blog.middlewares.categories',
                 'blog.middlewares.new_posts',
+                'blog.middlewares.tags_list',
             ],
         },
     },

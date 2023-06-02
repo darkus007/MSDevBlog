@@ -49,6 +49,7 @@ class PostFormTestCase(FormsTestCaseSettings):
             'title': 'Post name',
             'slug': 'nazvanie-posta',
             'body': 'Post text.',
+            'tags': 'tag',
             'status': 'PB'
         }
 
@@ -64,6 +65,7 @@ class PostFormTestCase(FormsTestCaseSettings):
             'title': 'Post name slug тест',
             'slug': 'none',
             'body': 'Post text.',
+            'tags': 'tag',
             'status': 'PB'
         }
 
@@ -73,6 +75,32 @@ class PostFormTestCase(FormsTestCaseSettings):
         form.save()
         saved_post = Post.objects.get(title='Post name slug тест')
         self.assertTrue(saved_post.slug, 'post-name-slug-test')
+
+    def test_clean_tags(self):
+        form_data = {
+            'cat': self.category,
+            'title': 'Post name slug тест',
+            'slug': 'none',
+            'body': 'Post text.',
+            'tags': 'tag',
+            'status': 'PB'
+        }
+
+        form = PostForm(data=form_data)
+        self.assertTrue(form.is_valid(), form.errors)
+
+    def test_clean_tags_fail(self):
+        form_data = {
+            'cat': self.category,
+            'title': 'Post name slug тест',
+            'slug': 'none',
+            'body': 'Post text.',
+            'tags': 'tag, таг',
+            'status': 'PB'
+        }
+
+        form = PostForm(data=form_data)
+        self.assertFalse(form.is_valid(), form.errors)
 
 
 class CommentFormTestCase(FormsTestCaseSettings):

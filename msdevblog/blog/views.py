@@ -5,7 +5,7 @@ from django.shortcuts import get_object_or_404, render
 from django.contrib import messages
 from django.conf import settings
 
-from .models import Post, Category, Comment
+from .models import Post, Category, Comment, BlogTag
 from .forms import PostForm, CommentForm, FeedbackForm
 from .utilities import send_feedback_mail
 
@@ -74,6 +74,15 @@ class ByCategoryListView(ListView):
     def get_queryset(self):
         cat = get_object_or_404(Category, slug=self.kwargs['slug'])
         return Post.published.filter(cat=cat)
+
+
+class ByTagListView(ListView):
+    model = Post
+    template_name = 'blog/post_list.html'
+
+    def get_queryset(self):
+        tag = get_object_or_404(BlogTag, slug=self.kwargs['slug'])
+        return Post.published.filter(tags__name__in=[tag.name]).distinct()
 
 
 def feedback(request):

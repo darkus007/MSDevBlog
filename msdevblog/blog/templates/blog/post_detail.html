@@ -7,6 +7,13 @@
     <h2><a href="{{ object.get_absolute_url }}">{{ object.title }}</a></h2>
     <p>{{ object.body }}</p>
     <p><span><b>{{ object.time_updated|date:"d-m-Y H:i" }}</b></span></p>
+    {% if object.tags.all %}
+        <p>Теги:
+            {% for tag in object.tags.all %}
+                <a href="{% url 'blog:tag' tag.slug %}">_{{ tag.name }}_</a>
+            {% endfor %}
+        </p>
+    {% endif %}
     <div class="cleaner h10"></div>
     <h5>Автор статьи</h5>
     <p>
@@ -70,7 +77,7 @@
         <div class="post_box_comment_content"><p>{{ comment.body|extra_space }}</p><hr></div>
     </div>
     {% endfor %}
-<div class="cleaner h10"></div>
-<div class="cleaner h10"></div>
 {% endif %}
+<div class="cleaner h10"></div>
+<div class="cleaner h10"></div>
 {% endblock %}

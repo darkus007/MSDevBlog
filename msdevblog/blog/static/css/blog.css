@@ -14,12 +14,12 @@ body {
 a, a:link {
 	color: #f9b507;
 	font-weight: normal;
-	text-decoration: underline;
+	text-decoration: none;
 	font-size: 12px;
 }
 
 a:hover {
-	text-decoration: none;
+	text-decoration: underline;
 }
 
 a.more {
@@ -97,14 +97,14 @@ h6 { font-size: 14px; margin: 0 0 5px; padding: 0; }
 	padding: 0 0 5px 0px;
 }
 
-.tooplate_list li a {
+.tooplate_list li a, .tooplate_list a {
 	color: #fff;
 	font-weight: normal;
 	font-size: 12px;
 	text-decoration: none;
 }
 
-.tooplate_list li a:hover {
+.tooplate_list li a:hover, .tooplate_list a:hover {
 	text-decoration: underline;
 }
 

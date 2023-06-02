@@ -38,14 +38,14 @@
                             {% endfor %}
                         </ul>
 
-                        <h3>Новые комментарии</h3>
-                        <ul class="tooplate_list">
-                            <li><a href="#">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Nulla omnis sequi voluptatibus! Corporis ea animi facilis voluptatibus maxime et quisquam, distinctio autem sunt reiciendis reprehenderit vitae quis sed alias itaque.</a></li>
-                            <li><a href="#">Python</a></li>
-                            <li><a href="#">Django</a></li>
-                            <li><a href="#">Flask</a></li>
-                            <li><a href="#">FastAPI</a></li>
-                        </ul>
+                        <h3>Теги</h3>
+                        <div class="tooplate_list">
+                            {% for tag in tags_list %}
+                            <span class="item">
+                            _<a href="{% url 'blog:tag' tag.slug %}">{{ tag.name }}</a>_
+                            </span>
+                            {% endfor %}
+                        </div>
 
                         <a href=""><img src="{% static 'images/rss.png' %}" alt="rss"></a>
                     </div>
