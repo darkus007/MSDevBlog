@@ -1,7 +1,10 @@
 from django.contrib.auth.mixins import UserPassesTestMixin
+from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 from django.core.exceptions import ValidationError
+from django.urls import reverse
+from django.views.decorators.http import require_POST
 from django.views.generic import ListView, CreateView, UpdateView
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib import messages
 from django.conf import settings
 
@@ -104,3 +107,27 @@ def feedback(request):
     else:
         form = FeedbackForm()
     return render(request, 'blog/feedback.html', {'form': form, 'selected': 'feedback'})
+
+
+@require_POST
+def search_view(request):
+    if request.method == 'POST':
+        searched = request.POST['searched']  # <input name="searched" ...
+        if not searched:
+            return redirect(reverse('blog:home'))
+
+        # Простой поиск по нескольким полям
+        # object_list = Post.published.annotate(
+        #         search=SearchVector('title', 'body'), ).filter(search=searched)
+
+        # Поиск с выделением основ слов и ранжирование результатов
+        # config='russian' - настраиваем удаление русских стоп слов
+        search_vector = SearchVector('title', 'body', config='russian')
+        search_query = SearchQuery(searched, config='russian')
+        object_list = Post.published.annotate(
+            search=search_vector,
+            rank=SearchRank(search_vector, search_query)).filter(search=search_query).order_by('-rank')
+
+        return render(request, 'blog/post_list.html', {'object_list': object_list, 'search_key': searched})
+    return render(request, 'blog/post_list.html', {})
+

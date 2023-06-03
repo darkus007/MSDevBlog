@@ -407,6 +407,24 @@ h6 { font-size: 14px; margin: 0 0 5px; padding: 0; }
 	margin-top: 5px;
 }
 
+.required {
+    padding: 5px;
+	color: #aaa;
+    border: 1px solid #3b3a3a;
+	background: #1b1a1a;
+	font-size: 12px;
+	margin-top: 5px;
+}
+
+.w-200 {
+    width: 200px;
+    margin-bottom: 10px;
+}
+
+.none {
+    display: none;
+}
+
 #cp_contact_form form label {
 	display: block;
 	width: 220px;
@@ -428,7 +446,7 @@ h6 { font-size: 14px; margin: 0 0 5px; padding: 0; }
 	margin-top: 5px;
 }
 
-#cp_contact_form form .submit_btn  {
+.submit_btn  {
 	border: none;
 	width: 90px;
 	height: 29px;

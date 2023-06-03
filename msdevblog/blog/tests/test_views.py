@@ -240,3 +240,30 @@ class ViewsTestSettings(TestCase):  # python manage.py test blog.tests.test_view
         self.assertEqual(len(messages), 1)
         self.assertEqual(str(messages[0]), 'Ваше сообщение отправлено!')
 
+    def test_search_view_title(self):
+        form_data = {
+            'searched': 'Название опубликованного поста'
+        }
+        response = self.client.post(reverse('blog:post-search'), data=form_data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context.get('object_list')[0], self.post_published)
+
+    def test_search_view_body(self):
+        form_data = {
+            'searched': 'Текст опубликованного поста'
+        }
+        response = self.client.post(reverse('blog:post-search'), data=form_data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context.get('object_list')[0], self.post_published)
+
+    def test_search_view_empty(self):
+        form_data = {
+            'searched': ''
+        }
+        expected_redirect_url = '/blog/'
+        response = self.client.post(reverse('blog:post-search'), data=form_data)
+        self.assertRedirects(response,
+                             expected_url=expected_redirect_url,
+                             status_code=302,
+                             target_status_code=200,
+                             fetch_redirect_response=True)

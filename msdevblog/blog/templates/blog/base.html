@@ -24,6 +24,16 @@
             <div class="col_w960 hr_divider">
                     <div class="col_w200 lp_box float_r">
                         <div class="cleaner h10"></div>
+
+                        <h3>Поиск</h3>
+                        <ul class="tooplate_list">
+                            <form class="d-flex" method="post" action="{% url 'blog:post-search' %}">
+                                {% csrf_token %}
+                              <input name="searched" class="required input_field w-200" type="search" placeholder="Поиск" aria-label="Search">
+                              <button class="submit_btn float_r none" type="submit">Поиск</button>
+                            </form>
+                        </ul>
+
                         <h3>Категории</h3>
                         <ul class="tooplate_list">
                             {% for category in categories %}
@@ -58,6 +68,9 @@
                                 <h3>Страница не найдена...</h3>
                             </div>
                             {% endblock %}
+                            <div class="cleaner h10"></div>
+                            <div class="cleaner h10"></div>
+                            <div class="cleaner h10"></div>
 
                         </div>
                     </div>

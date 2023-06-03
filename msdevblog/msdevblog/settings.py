@@ -40,6 +40,7 @@ INSTALLED_APPS = [
 
     'captcha',
     'taggit',
+    'django.contrib.postgres',
 
     'blog.apps.BlogConfig',
     'members.apps.MembersConfig',
