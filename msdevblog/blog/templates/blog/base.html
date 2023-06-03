@@ -57,7 +57,7 @@
                             {% endfor %}
                         </div>
 
-                        <a href=""><img src="{% static 'images/rss.png' %}" alt="rss"></a>
+                        <a href="{% url 'blog:post-feed' %}"><img src="{% static 'images/rss.png' %}" alt="rss"></a>
                     </div>
 
                     <div class="col_w730 float_l">
