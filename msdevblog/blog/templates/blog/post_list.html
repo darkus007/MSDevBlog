@@ -2,9 +2,9 @@
 
 {% block content %}
     {% for post in object_list %}
-    <div class="post_box_content">
+    <div class="post_box_content list">
         <h2><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></h2>
-        <p>{{ post.body|truncatewords_html:30 }}</p>
+        <p>{{ post.body|safe|truncatewords_html:30 }}</p>
         <p><span><b>{{ post.time_updated|date:"d-m-Y H:i" }}</b> - {{ post.user }}</span></p>
         {% if post.tags.all %}
         <p>Теги:

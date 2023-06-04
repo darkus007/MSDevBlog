@@ -5,7 +5,7 @@
 {% block content %}
 <div class="post_box_content">
     <h2><a href="{{ object.get_absolute_url }}">{{ object.title }}</a></h2>
-    <p>{{ object.body }}</p>
+    <p>{{ object.body|safe }}</p>
     <p><span><b>{{ object.time_updated|date:"d-m-Y H:i" }}</b></span></p>
     {% if object.tags.all %}
         <p>Теги:

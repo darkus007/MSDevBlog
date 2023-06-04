@@ -4,6 +4,7 @@ from django.urls import reverse
 
 from taggit.managers import TaggableManager
 from taggit.models import TagBase, GenericTaggedItemBase
+from django_ckeditor_5.fields import CKEditor5Field
 
 # стандартная библиотека не работает с русскими символами, используем свою
 from msdevblog.utilites import slugify as to_slugify
@@ -57,7 +58,7 @@ class Post(models.Model):
                             related_name='posts', verbose_name='Категория')
     title = models.CharField(max_length=255, verbose_name='Название поста')
     slug = models.SlugField(max_length=255, unique_for_date='time_created', verbose_name='URL')
-    body = models.TextField(verbose_name='Текст поста')
+    body = CKEditor5Field('Текст поста', config_name='extends')
     time_created = models.DateTimeField(auto_now_add=True, verbose_name='Время создания')
     time_updated = models.DateTimeField(auto_now=True, verbose_name='Время последнего изменения')
     status = models.CharField(max_length=2, choices=Status.choices,

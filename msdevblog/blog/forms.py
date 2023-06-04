@@ -2,6 +2,7 @@ from django import forms
 
 from captcha.fields import CaptchaField
 from django.core.exceptions import ValidationError
+from django_ckeditor_5.widgets import CKEditor5Widget
 
 from msdevblog.utilites import slugify
 from .models import Post, Comment
@@ -40,7 +41,7 @@ class PostForm(forms.ModelForm):
             'slug': forms.TextInput(attrs={'class': 'required input_field',
                                            'placeholder': 'URL-адрес поста (slug)',
                                            'value': 'none', 'type': 'hidden'}),
-            'body': forms.Textarea(attrs={'class': 'required input_field'}),
+            'body': CKEditor5Widget(attrs={'class': 'django_ckeditor_5 input_field'}, config_name='extends'),
             'tags': TagWidget(attrs={'class': 'required input_field'}),
             'status': forms.Select(attrs={'class': 'required input_field'}),
         }

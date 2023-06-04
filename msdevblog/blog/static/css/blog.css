@@ -274,6 +274,21 @@ h6 { font-size: 14px; margin: 0 0 5px; padding: 0; }
 	width: 700px
 }
 
+.language-plaintext {
+    white-space: pre-wrap;
+
+}
+
+.post_box_content pre {
+    background: #393939;
+    padding: 15px;
+}
+
+.post_box_content code {
+    background: #393939;
+    padding: 5px;
+}
+
 .post_box_content img {
 	margin-bottom: 5px
 }
@@ -434,6 +449,10 @@ h6 { font-size: 14px; margin: 0 0 5px; padding: 0; }
 	margin-top: 25px;
 }
 
+#cp_contact_form form label.ck.ck-label.ck-voice-label {
+	display: none;
+}
+
 #cp_contact_form form textarea {
 	width: 688px;
 	height: 160px;
@@ -490,4 +509,8 @@ h6 { font-size: 14px; margin: 0 0 5px; padding: 0; }
 .d-flex-space-between {
     display: flex;
     justify-content: space-between;
+}
+
+figure img {
+    max-width: 600px;
 }
