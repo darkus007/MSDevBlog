@@ -145,6 +145,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # ================================= дополнительные настройки =================================
 
+# Пагинация, число постов на странице
+PAGINATE_BY_CONST = 25
+
 # Расширенная модель пользователя
 AUTH_USER_MODEL = "members.AdvUser"
 

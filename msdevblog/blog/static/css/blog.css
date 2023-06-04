@@ -511,6 +511,11 @@ h6 { font-size: 14px; margin: 0 0 5px; padding: 0; }
     justify-content: space-between;
 }
 
+.d-flex-space-around {
+    display: flex;
+    justify-content: space-around;
+}
+
 figure img {
     max-width: 600px;
 }

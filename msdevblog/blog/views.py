@@ -8,6 +8,7 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib import messages
 from django.conf import settings
 
+from msdevblog.settings import PAGINATE_BY_CONST
 from .models import Post, Category, Comment, BlogTag
 from .forms import PostForm, CommentForm, FeedbackForm
 from .utilities import send_feedback_mail
@@ -17,6 +18,7 @@ class PostListView(ListView):
     model = Post
     template_name = 'blog/post_list.html'
     extra_context = {'selected': 'home'}
+    paginate_by = PAGINATE_BY_CONST
 
     def get_queryset(self):
         return Post.published.all()

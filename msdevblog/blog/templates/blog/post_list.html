@@ -16,4 +16,26 @@
         <a class="more float_r" href="{{ post.get_absolute_url }}">Читать</a>
     </div>
     {% endfor %}
+
+    {% if page_obj.paginator.num_pages > 1 %}
+    <div class="cleaner h10"></div>
+    <div class="cleaner h10"></div>
+    <div class="cleaner h10"></div>
+    <div class="post_box_content list">
+        <div class="d-flex-space-around">
+
+            {% if page_obj.has_previous %}
+                <a href="?page=1">&laquo; Первая</a>
+                <a href="?page={{ page_obj.previous_page_number }}">{{ page_obj.previous_page_number }}</a>
+            {% endif %}
+                {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}">{{ page_obj.next_page_number }}</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}">Последняя &raquo;</a>
+            {% endif %}
+
+        </div>
+    </div>
+    {% endif %}
+
 {% endblock %}

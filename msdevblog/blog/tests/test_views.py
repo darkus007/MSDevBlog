@@ -7,7 +7,7 @@ from django.contrib.messages import get_messages
 
 from captcha.conf import settings as captcha_settings
 
-from blog.models import Category, Post, Comment, BlogTag
+from blog.models import Category, Post, Comment
 
 
 class ViewsTestSettings(TestCase):  # python manage.py test blog.tests.test_views
@@ -267,3 +267,18 @@ class ViewsTestSettings(TestCase):  # python manage.py test blog.tests.test_view
                              status_code=302,
                              target_status_code=200,
                              fetch_redirect_response=True)
+
+    def test_paginator(self):
+        for post in range(25):
+            Post.objects.create(
+                user=self.user,
+                cat=self.category,
+                title=f'Test paginator {post}',
+                slug=f'test-paginator-{post}',
+                body=f'Test paginator text {post}',
+                status='PB'
+            )
+        response = self.client.get(reverse('blog:home'))
+        self.assertEqual(len(response.context.get('object_list')), 25, msg='Проверка первой страницы')
+        response = self.client.get('/blog/?page=2')
+        self.assertEqual(len(response.context.get('object_list')), 1, msg='Проверка второй страницы')
