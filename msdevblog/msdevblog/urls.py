@@ -21,6 +21,8 @@ from blog.sitemaps import PostSitemap
 from django.conf import settings
 from django.conf.urls.static import static
 
+handler404 = 'blog.views.page_not_found'
+
 sitemaps = {
     'posts': PostSitemap,
 }

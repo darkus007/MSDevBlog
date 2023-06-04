@@ -133,3 +133,6 @@ def search_view(request):
         return render(request, 'blog/post_list.html', {'object_list': object_list, 'search_key': searched})
     return render(request, 'blog/post_list.html', {})
 
+
+def page_not_found(request, exception):
+    return render(request, 'blog/base.html')
