@@ -9,7 +9,12 @@
     {% else %}
         <li><a href="{% url 'blog:feedback' %}">Обратная связь</a></li>
     {% endif %}
-    <li><a href="#">О сайте</a></li>
+    {% if selected == 'about' %}
+        <li><a href="{% url 'blog:about' %}" class="current">О сайте</a></li>
+    {% else %}
+        <li><a href="{% url 'blog:about' %}">О сайте</a></li>
+    {% endif %}
+
 
     {% if user.is_authenticated %}
         {% if selected == 'create_post' %}

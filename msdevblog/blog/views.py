@@ -136,3 +136,7 @@ def search_view(request):
 
 def page_not_found(request, exception):
     return render(request, 'blog/base.html')
+
+
+def about_view(request):
+    return render(request, 'blog/about.html', {'selected': 'about'})

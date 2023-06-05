@@ -14,5 +14,6 @@ urlpatterns = [
     path('feedback/', feedback, name='feedback'),
     path('search/', search_view, name='post-search'),
     path('feed/', LatestPostsFeed(), name='post-feed'),
+    path('about/', about_view, name='about'),
     path('<slug:slug>/', post_detail, name='post-detail'),
 ]

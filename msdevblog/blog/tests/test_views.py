@@ -86,7 +86,8 @@ class ViewsTestSettings(TestCase):  # python manage.py test blog.tests.test_view
 
     def test_post_detail_get_404(self):
         response = self.client.get(reverse('blog:post-detail', kwargs={'slug': 'not-found'}))
-        self.assertEqual(response.status_code, 404)
+        self.assertTemplateUsed(response, 'blog/base.html', 'blog/includes/main_menu.html')
+        self.assertEqual(response.status_code, 200)
 
     def test_post_detail__post_not_auth(self):
         form_data = {'body': 'Comment post_not_auth'}
@@ -282,3 +283,8 @@ class ViewsTestSettings(TestCase):  # python manage.py test blog.tests.test_view
         self.assertEqual(len(response.context.get('object_list')), 25, msg='Проверка первой страницы')
         response = self.client.get('/blog/?page=2')
         self.assertEqual(len(response.context.get('object_list')), 1, msg='Проверка второй страницы')
+
+    def test_about_view(self):
+        response = self.client.get(reverse('blog:about'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'blog/about.html')
