@@ -3,17 +3,20 @@
 {% block content %}
     {% for post in object_list %}
     <div class="post_box_content list">
-        <h2><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></h2>
+
+        <h2><a href="{% url 'blog:post-detail' post.slug %}">{{ post.title }}</a></h2>
         <p>{{ post.body|safe|truncatewords_html:30 }}</p>
-        <p><span><b>{{ post.time_updated|date:"d-m-Y H:i" }}</b> - {{ post.user }}</span></p>
-        {% if post.tags.all %}
+        <p><span><b>{{ post.time_updated|date:"d-m-Y H:i" }}</b> - {{ post.user.username }}</span></p>
+
+        {% if post.tags %}
         <p>Теги:
             {% for tag in post.tags.all %}
                 <a href="{% url 'blog:tag' tag.slug %}">_{{ tag.name }}_</a>
             {% endfor %}
         </p>
         {% endif %}
-        <a class="more float_r" href="{{ post.get_absolute_url }}">Читать</a>
+
+        <a class="more float_r" href="{% url 'blog:post-detail' post.slug %}">Читать</a>
     </div>
     {% endfor %}
 

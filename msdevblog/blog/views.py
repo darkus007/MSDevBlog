@@ -1,6 +1,7 @@
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 from django.core.exceptions import ValidationError
+from django.db.models import Subquery
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 from django.views.generic import ListView, CreateView, UpdateView
@@ -21,12 +22,16 @@ class PostListView(ListView):
     paginate_by = PAGINATE_BY_CONST
 
     def get_queryset(self):
-        return Post.published.all()
+        return Post.published.select_related('user').prefetch_related('tags') \
+            .only('title', 'slug', 'body', 'time_updated', 'user__username')
 
 
 def post_detail(request, slug):
-    post = get_object_or_404(Post.objects, slug=slug)
-
+    post = get_object_or_404(Post.objects.select_related('user') \
+                             .only('time_updated', 'slug', 'title', 'body',
+                                   'user__id', 'user__username', 'user__first_name', 'user__last_name', 'user__bio',
+                                   'user__git') \
+                             .prefetch_related('tags'), slug=slug)
     if request.method == 'POST' and request.user.is_authenticated and request.user.is_email_activated:
         form = CommentForm(request.POST)
         if form.is_valid():
@@ -35,7 +40,7 @@ def post_detail(request, slug):
             form.save()
 
     form = CommentForm()
-    comments = Comment.objects.filter(post=post)
+    comments = Comment.objects.values('time_created', 'body', 'user__username').filter(post=post)
     is_author = bool(request.user == post.user)
     return render(request, 'blog/post_detail.html',
                   {'object': post, 'form': form, 'comments': comments, 'is_author': is_author})
@@ -65,11 +70,14 @@ class PostUpdateView(UserPassesTestMixin, UpdateView):
     extra_context = {'selected': 'create_post'}
 
     def test_func(self):
-        post_owner = Post.objects.get(slug=self.kwargs['slug'])
-        return bool(self.request.user.is_authenticated and post_owner.user == self.request.user)
+        post_owner = Post.objects.only('user__id').get(slug=self.kwargs['slug'])
+        return bool(self.request.user.is_authenticated and post_owner.user_id == self.request.user.id)
 
     def get_queryset(self):
-        return Post.objects.filter(slug=self.kwargs['slug']).select_related('cat', 'user')
+        return Post.objects.select_related('cat', 'user')\
+            .only('title', 'slug', 'body', 'status',
+                  'cat__title',
+                  'user__id', 'user__is_email_activated')
 
 
 class ByCategoryListView(ListView):
@@ -77,8 +85,9 @@ class ByCategoryListView(ListView):
     template_name = 'blog/post_list.html'
 
     def get_queryset(self):
-        cat = get_object_or_404(Category, slug=self.kwargs['slug'])
-        return Post.published.filter(cat=cat)
+        cat = Subquery(Category.objects.values('id').filter(slug=self.kwargs['slug']))
+        return Post.published.select_related('user').prefetch_related('tags') \
+            .only('title', 'slug', 'body', 'time_updated', 'user__username').filter(cat=cat)
 
 
 class ByTagListView(ListView):
@@ -86,8 +95,10 @@ class ByTagListView(ListView):
     template_name = 'blog/post_list.html'
 
     def get_queryset(self):
-        tag = get_object_or_404(BlogTag, slug=self.kwargs['slug'])
-        return Post.published.filter(tags__name__in=[tag.name]).distinct()
+        tag = Subquery(BlogTag.objects.values('name').filter(slug=self.kwargs['slug']))
+        return Post.published.select_related('user').prefetch_related('tags') \
+            .only('title', 'slug', 'body', 'time_updated', 'user__username')\
+            .filter(tags__name__in=[tag]).distinct()
 
 
 def feedback(request):
@@ -126,12 +137,13 @@ def search_view(request):
         # config='russian' - настраиваем удаление русских стоп слов
         search_vector = SearchVector('title', 'body', config='russian')
         search_query = SearchQuery(searched, config='russian')
-        object_list = Post.published.annotate(
-            search=search_vector,
-            rank=SearchRank(search_vector, search_query)).filter(search=search_query).order_by('-rank')
+        object_list = Post.published.select_related('user').prefetch_related('tags') \
+            .only('title', 'slug', 'body', 'time_updated', 'user__username')\
+            .annotate(search=search_vector, rank=SearchRank(search_vector, search_query))\
+            .filter(search=search_query).order_by('-rank')
 
         return render(request, 'blog/post_list.html', {'object_list': object_list, 'search_key': searched})
-    return render(request, 'blog/post_list.html', {})
+    return render(request, 'blog/post_list.html')
 
 
 def page_not_found(request, exception):

@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.conf import settings
+from django.core.cache import cache
 
 from blog.models import Category, Post
 from blog.middlewares import categories, new_posts, tags_list
@@ -26,6 +27,16 @@ class MiddlewaresTestCase(TestCase):   # python manage.py test blog.tests.test_m
             slug='None',
             body='Текст поста',
         )
+
+        for x in range(8):
+            Post.objects.create(
+                user=cls.user,
+                cat=cls.category,
+                title=f'Название опубликованного поста {x}',
+                slug='nazvanie-opublikovannogo-posta',
+                body='Текст опубликованного поста',
+                status='PB'
+            )
 
         cls.post = Post.objects.create(
             user=cls.user,
@@ -58,17 +69,10 @@ class MiddlewaresTestCase(TestCase):   # python manage.py test blog.tests.test_m
         self.assertEqual(posts['new_posts'][0]['slug'], self.post.slug)
 
     def test_new_posts_published_only(self):
-        self.assertEqual(len(new_posts(None)['new_posts']), 1)
+        cache.delete('new_posts')
+        self.assertEqual(len(new_posts(None)['new_posts']), 5)
 
     def test_new_posts_max_length(self):
-        for x in range(8):
-            Post.objects.create(
-                user=self.user,
-                cat=self.category,
-                title=f'Название опубликованного поста {x}',
-                slug='nazvanie-opublikovannogo-posta',
-                body='Текст опубликованного поста',
-                status='PB'
-            )
+        cache.delete('new_posts')
         self.assertEqual(len(Post.published.all()), 9)
         self.assertEqual(len(new_posts(None)['new_posts']), 5)

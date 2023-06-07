@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="post_box_content">
-    <h2><a href="{{ object.get_absolute_url }}">{{ object.title }}</a></h2>
+    <h2><a href="{% url 'blog:post-detail' object.slug %}">{{ object.title }}</a></h2>
     <p>{{ object.body|safe }}</p>
     <p><span><b>{{ object.time_updated|date:"d-m-Y H:i" }}</b></span></p>
     {% if object.tags.all %}
@@ -39,7 +39,7 @@
 </div>
 
 {% if user.is_authenticated %}
-    {% if user.is_email_activated %}
+    {% if object.user__is_email_activated %}
     <div id="cp_contact_form">
         <form method="post" name="contact">
             {% csrf_token %}
@@ -51,7 +51,7 @@
     {% else %}
         <div class="post_box_content">
             <div class="cleaner h10"></div>
-            <p>Подтвердите адрес E-mail: {{ user.email }} чтобы оставить комментарий.</p>
+            <p>Подтвердите адрес E-mail: {{ object.user__email }} чтобы оставить комментарий.</p>
             <p><a href="{% url 'repeat-send-email' %}">Повторно отправить сообщение для активации e-mail.</a></p>
             <div class="cleaner h10"></div>
         </div>
@@ -71,7 +71,7 @@
     <div class="post_box">
         <div class="post_box_date">
             {{ comment.time_created|date:"d-m-Y H:i" }}
-            <span>{{ comment.user.username }}</span>
+            <span>{{ comment.user__username }}</span>
         </div>
 
         <div class="post_box_comment_content"><p>{{ comment.body|extra_space }}</p><hr></div>

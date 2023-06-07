@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'taggit',
     'django.contrib.postgres',
     'django_ckeditor_5',
+    'debug_toolbar',
 
     'blog.apps.BlogConfig',
     'members.apps.MembersConfig',
@@ -59,6 +60,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
 
 ROOT_URLCONF = 'msdevblog.urls'
@@ -130,6 +133,8 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
+
+INTERNAL_IPS = ["127.0.0.1"]
 
 
 # Static files (CSS, JavaScript, Images)
@@ -267,6 +272,19 @@ CKEDITOR_5_CONFIGS = {
             'styles': 'true',
             'startIndex': 'true',
             'reversed': 'true',
+        }
+    }
+}
+
+
+# Настройки кэширования
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'TIMEOUT': 300,  # время хранения кэша (300 секунд (5 минут) - по умолчанию)
+        'OPTIONS': {
+            'MAX_ENTRIES': 300,  # количество записей кэша (300 - по умолчанию)
+            'CULL_FREQUENCY': 2,  # часть кэша, которая будет очищена (0 - весь кэш, 2 - половина, 3 - треть ...)
         }
     }
 }
