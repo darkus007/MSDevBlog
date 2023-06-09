@@ -1,8 +1,8 @@
-from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.core.signing import Signer
 
 from msdevblog.settings import ALLOWED_HOSTS, DEFAULT_FROM_EMAIL
+from .tasks import task_send_mail
 
 signer = Signer()       # Используем для создания цифровой подписи
 
@@ -21,8 +21,8 @@ def send_activation_notification(user):
     context = {'user': user, 'host': host, 'sign': signer.sign(user.username)}
     subject = render_to_string('email/activation_letter_subject.txt', context)
     body_text = render_to_string('email/activation_letter_body.txt', context)
-    send_mail(subject,
-              body_text,
-              from_email=DEFAULT_FROM_EMAIL,
-              recipient_list=[user.email],
-              fail_silently=True)
+    task_send_mail.delay(subject,
+                         body_text,
+                         from_email=DEFAULT_FROM_EMAIL,
+                         recipient_list=[user.email],
+                         fail_silently=True)

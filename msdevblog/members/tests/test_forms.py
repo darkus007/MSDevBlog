@@ -4,7 +4,7 @@ from django.conf import settings
 
 from captcha.conf import settings as captcha_settings
 
-from members.forms import UserRegistrationForm, UserProfileForm, UserPasswordChangeForm
+from members.forms import UserRegistrationForm, UserProfileForm, UserPasswordChangeForm, CustomPasswordResetForm
 
 
 class FormsTestCaseSettings(TestCase):  # python manage.py test members.tests.test_forms
@@ -81,4 +81,13 @@ class UserPasswordChangeFormTestCase(FormsTestCaseSettings):
         form.save()
         saved_user = get_user_model().objects.get(username='test_user')
         self.assertTrue(saved_user.check_password('Password2$'))
+
+
+class UserCustomPasswordResetFormTestCase(FormsTestCaseSettings):
+    def test_email_field(self):
+        form_data = {
+            'email': 'test3@testsite.ru'
+        }
+        form = CustomPasswordResetForm(data=form_data)
+        self.assertTrue(form.is_valid(), form.errors)
         

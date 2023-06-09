@@ -1,10 +1,11 @@
-from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
+from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm, PasswordResetForm
 from django import forms
 
 from captcha.fields import CaptchaField
 
 from .models import AdvUser
 from .utilities import send_activation_notification
+from .tasks import task_send_mail_reset_password
 
 
 class UserRegistrationForm(UserCreationForm):
@@ -67,3 +68,17 @@ class UserPasswordChangeForm(PasswordChangeForm):
     class Meta:
         model = AdvUser
         fields = ('old_password', 'new_password1', 'new_password2')
+
+
+class CustomPasswordResetForm(PasswordResetForm):
+    """ Отправляет письма через Celery """
+    email = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'form-control', 'id': 'email',
+                                                            'placeholder': 'Email'}))
+
+    def send_mail(self, subject_template_name, email_template_name, context,
+                  from_email, to_email, html_email_template_name=None):
+        context['user'] = context['user'].id
+        task_send_mail_reset_password.delay(subject_template_name=subject_template_name,
+                                            email_template_name=email_template_name,
+                                            context=context, from_email=from_email, to_email=to_email,
+                                            html_email_template_name=html_email_template_name)

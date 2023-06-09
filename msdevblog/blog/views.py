@@ -12,7 +12,7 @@ from django.conf import settings
 from msdevblog.settings import PAGINATE_BY_CONST
 from .models import Post, Category, Comment, BlogTag
 from .forms import PostForm, CommentForm, FeedbackForm
-from .utilities import send_feedback_mail
+from .tasks import send_feedback_mail
 
 
 class PostListView(ListView):
@@ -106,7 +106,7 @@ def feedback(request):
     if request.method == 'POST':
         form = FeedbackForm(request.POST)
         if form.is_valid():
-            send = send_feedback_mail(
+            send = send_feedback_mail.delay(
                 subject=form.cleaned_data['theme'],
                 message=form.cleaned_data['text'] + '\nE-mail: ' + form.cleaned_data['email'],
                 from_email=settings.SERVER_EMAIL,
