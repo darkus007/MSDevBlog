@@ -17,7 +17,10 @@
     <div class="cleaner h10"></div>
     <h5>Автор статьи</h5>
     <p>
-        <b>{{ object.user.username }}</b> {{ object.user.first_name }} {{ object.user.last_name }}<br>
+        <b>{{ object.user.username }} </b>
+        {% if object.user.first_name %}
+           - {{ object.user.first_name }} {{ object.user.last_name }}<br>
+        {% endif %}
         {{ object.user.bio }}<br>
         {% if object.user.git %}
             <a target="_blank"  href="{{ object.user.git }}">GitHub {{ object.user.username }}</a>

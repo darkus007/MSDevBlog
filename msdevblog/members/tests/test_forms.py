@@ -90,4 +90,3 @@ class UserCustomPasswordResetFormTestCase(FormsTestCaseSettings):
         }
         form = CustomPasswordResetForm(data=form_data)
         self.assertTrue(form.is_valid(), form.errors)
-        

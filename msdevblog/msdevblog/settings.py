@@ -10,7 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 import os
-from os import getenv
+from os import getenv, path
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -62,6 +62,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
     "debug_toolbar.middleware.DebugToolbarMiddleware",
+
+    "blog.middlewares.MiddlewareAllException",
 ]
 
 ROOT_URLCONF = 'msdevblog.urls'
@@ -140,7 +142,11 @@ INTERNAL_IPS = ["127.0.0.1"]
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-# STATIC_URL = 'static/'
+STATIC_URL = 'static/'
+STATIC_ROOT = path.join(BASE_DIR, 'static/')
+
+MEDIA_URL = 'media/'
+MEDIA_ROOT = path.join(BASE_DIR, 'media/')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -301,3 +307,79 @@ CELERY_RESULT_BACKEND = 'redis://' + REDIS_HOST + ':' + REDIS_PORT + '/0'
 CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
+
+
+# настраиваем логирование
+LOGGING = {
+    'version': 1,
+    'disable_existing_logger': True,    # отключаем все регистраторы, используемые по умолчанию
+
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
+        },
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
+
+    'formatters': {
+        'simple': {
+            'format': '[%(asctime)s] %(levelname)s: %(message)s',   # формат сообщения
+            'datefmt': '%Y.%m.%d %H:%M:%S',                         # формат временной метки
+        }
+    },
+
+    'handlers': {
+        'console_dev': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+            'filters': ['require_debug_true'],
+        },
+        'console_prod': {
+            'level': 'WARNING',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+            'filters': ['require_debug_false'],
+        },
+        'file': {
+            'level': 'WARNING',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': 'logs/website.log',
+            'maxBytes': 1048576,
+            'backupCount': 10,
+            'formatter': 'simple',
+            'filters': ['require_debug_false'],
+        },
+        'mail_admins': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler',
+            'filters': ['require_debug_false']
+        }
+    },
+
+    'loggers': {
+        'django': {                 # собирает сообщения от всех подсистем фреймворка
+            'level': 'INFO',
+            'handlers': ['console_dev', 'console_prod'],
+        },
+        'django.server': {          # собирает сообщения от подсистемы обработки запросов и формирования ответов
+            'level': 'WARNING',
+            'handlers': ['file'],
+            'propagate': True,
+        },
+        # 'django.db.backends': {      # собирает сообщения обо всех операциях с базой данных сайта
+        #     'handlers': ['console_dev'],
+        #     'level': 'DEBUG',       # DEBUG - по умолчанию
+        # }
+
+        # добавлен регистратора, который объявлен в файле blog/middleware.py
+        # logger = logging.getLogger(__name__), где __name__ = 'blog.middlewares'
+        'blog.middlewares': {
+            'level': 'WARNING',
+            'handlers': ['file', 'console_dev', 'mail_admins'],
+            'propagate': False,
+        },
+    }
+}
