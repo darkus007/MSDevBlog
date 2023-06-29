@@ -42,7 +42,7 @@
 </div>
 
 {% if user.is_authenticated %}
-    {% if object.user__is_email_activated %}
+    {% if user.is_email_activated %}
     <div id="cp_contact_form">
         <form method="post" name="contact">
             {% csrf_token %}
@@ -54,7 +54,7 @@
     {% else %}
         <div class="post_box_content">
             <div class="cleaner h10"></div>
-            <p>Подтвердите адрес E-mail: {{ object.user__email }} чтобы оставить комментарий.</p>
+            <p>Подтвердите адрес E-mail: {{ user.email }} чтобы оставить комментарий.</p>
             <p><a href="{% url 'repeat-send-email' %}">Повторно отправить сообщение для активации e-mail.</a></p>
             <div class="cleaner h10"></div>
         </div>

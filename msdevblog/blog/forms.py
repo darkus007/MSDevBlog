@@ -12,6 +12,10 @@ from taggit.forms import TagWidget
 
 class PostForm(forms.ModelForm):
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["body"].required = False
+
     def clean_slug(self):
         # Не запускается, если поле "slug" пустое!!!
         # По этой причине оно скрыто и установлено значение 'none'.

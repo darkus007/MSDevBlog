@@ -9,7 +9,6 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
-import os
 from os import getenv, path
 from pathlib import Path
 
@@ -170,24 +169,23 @@ LOGOUT_REDIRECT_URL = 'blog:home'
 
 
 # настраиваем отправку писем
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # выводит в командной строке
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  # отправляет на почтовый сервер
-DEFAULT_FROM_EMAIL = 'flats@mail.ru'
-EMAIL_HOST = 'localhost'
-EMAIL_PORT = 1025
-# EMAIL_HOST_USER = 'user'                                         # логин для SMTP-сервера, по умолчанию пустая строка
-# EMAIL_HOST_PASSWORD = 'password'                                 # пароль для SMTP-сервера, по умолчанию пустая строка
+# настраиваем отправку писем
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # выводит в командной строке
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  # отправляет на почтовый сервер
+DEFAULT_FROM_EMAIL = getenv('DEFAULT_FROM_EMAIL')
+EMAIL_HOST = getenv('EMAIL_HOST')
+EMAIL_PORT = getenv('EMAIL_PORT')
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+EMAIL_HOST_USER = getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = getenv('EMAIL_HOST_PASSWORD')
 ADMINS = [  # админы, которым будут отправлены письма методом mail_admins
-    ('admin', 'admin@mail.ru'),
+    ('admin', 'darkus007@yandex.ru'),
 ]
-SERVER_EMAIL = 'flats_from@email.ru'  # адрес почты с которой будут отправлены письма
+SERVER_EMAIL = getenv('DEFAULT_FROM_EMAIL')  # адрес почты с которой будут отправлены письма
 
 
 # CKEditor config
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 STATICFILES_DIRS = [
     BASE_DIR / 'staticfiles',
 ]
