@@ -180,9 +180,10 @@ EMAIL_USE_SSL = False
 EMAIL_HOST_USER = getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = getenv('EMAIL_HOST_PASSWORD')
 ADMINS = [  # админы, которым будут отправлены письма методом mail_admins
-    ('admin', 'darkus007@yandex.ru'),
+    ('admin', 'admin@mail.ru'),
 ]
-SERVER_EMAIL = getenv('DEFAULT_FROM_EMAIL')  # адрес почты с которой будут отправлены письма
+EMAIL_TO_FEEDBACK = ['feedback@mail.ru']        # адреса электронной почты для получения обратной связи от пользователей
+SERVER_EMAIL = getenv('DEFAULT_FROM_EMAIL')     # адрес почты с которой будут отправлены письма
 
 
 # CKEditor config

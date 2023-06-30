@@ -110,7 +110,7 @@ def feedback(request):
                 subject=form.cleaned_data['theme'],
                 message=form.cleaned_data['text'] + '\nE-mail: ' + form.cleaned_data['email'],
                 from_email=settings.SERVER_EMAIL,
-                recipient_list=settings.ADMINS
+                recipient_list=settings.EMAIL_TO_FEEDBACK
             )
             if send:
                 messages.add_message(request, messages.SUCCESS, 'Ваше сообщение отправлено!')

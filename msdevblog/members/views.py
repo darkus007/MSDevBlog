@@ -59,7 +59,7 @@ def user_update_profile(request):
     return render(request, 'registration/user_update_profile.html', {'form': form, 'selected': 'profile'})
 
 
-@require_POST
+@require_GET
 def user_email_activate(request, sign):
     """
     Функция для активации e-mail пользователя.
